@@ -1,14 +1,22 @@
 {
   "name": "m2",
   "version": "1.0.0",
-  "description": "",
+  "description": "AHA Restaurant - Real-Time POS, Interactive Floor Map & Fine Dining Web Application",
   "main": "app.js",
   "scripts": {
     "dev": "http-server -p 8080 -o",
     "start": "http-server -p 8080",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "keywords": [],
+  "keywords": [
+    "restaurant",
+    "pos",
+    "kds",
+    "glassmorphism",
+    "fine-dining",
+    "real-time",
+    "web-audio-api"
+  ],
   "author": "",
   "license": "ISC",
   "type": "commonjs",
