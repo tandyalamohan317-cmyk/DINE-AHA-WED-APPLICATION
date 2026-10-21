@@ -1,0 +1,203 @@
+/* ==========================================================================
+   AHA Premium Glassmorphism Restaurant - Global Stylesheet
+   ========================================================================== */
+
+:root {
+  --primary: #f2ca50;
+  --primary-container: #d4af37;
+  --primary-fixed: #ffe088;
+  --primary-fixed-dim: #e9c349;
+  --background: #16130b;
+  --surface: #16130b;
+  --surface-container-low: #1f1b13;
+  --surface-container: #231f17;
+  --surface-container-high: #2d2a21;
+  --surface-container-highest: #38342b;
+  --on-surface: #eae1d4;
+  --on-surface-variant: #d0c5af;
+  --outline: #99907c;
+  --outline-variant: #4d4635;
+}
+
+/* Base Body Styles */
+body {
+  background-color: var(--background);
+  color: var(--on-surface);
+  font-family: 'Inter', sans-serif;
+  overflow-x: hidden;
+  selection-background-color: rgba(242, 202, 80, 0.3);
+  selection-color: #f2ca50;
+}
+
+/* Glassmorphism Surface Styles */
+.glass-card {
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.glass-card:hover {
+  border-color: rgba(212, 175, 55, 0.3);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5), 0 0 20px rgba(212, 175, 55, 0.08);
+}
+
+.glass-card-elevated {
+  background: rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  box-shadow: 0 40px 40px rgba(212, 175, 55, 0.05);
+}
+
+.glass-panel {
+  background: rgba(255, 255, 255, 0.04);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.glass-nav {
+  background: rgba(22, 19, 11, 0.75);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+}
+
+.glass-input {
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  color: var(--on-surface);
+  transition: all 0.25s ease;
+}
+
+.glass-input:focus {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: var(--primary-container);
+  box-shadow: 0 0 15px rgba(212, 175, 55, 0.25);
+  outline: none;
+}
+
+/* Dietary Indicators */
+.veg-indicator {
+  width: 14px;
+  height: 14px;
+  border: 1.5px solid #22c55e;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 2px;
+  padding: 1px;
+}
+
+.veg-indicator::after {
+  content: '';
+  width: 6px;
+  height: 6px;
+  background-color: #22c55e;
+  border-radius: 50%;
+}
+
+.non-veg-indicator {
+  width: 14px;
+  height: 14px;
+  border: 1.5px solid #ef4444;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 2px;
+  padding: 1px;
+}
+
+.non-veg-indicator::after {
+  content: '';
+  width: 0;
+  height: 0;
+  border-left: 4px solid transparent;
+  border-right: 4px solid transparent;
+  border-bottom: 7px solid #ef4444;
+}
+
+/* Glow and Lighting Effects */
+.text-glow {
+  text-shadow: 0 0 25px rgba(242, 202, 80, 0.35);
+}
+
+.ambient-glow {
+  box-shadow: 0 0 40px rgba(212, 175, 55, 0.08);
+}
+
+.ambient-gold-radial {
+  background: radial-gradient(circle at 50% 50%, rgba(212, 175, 55, 0.12) 0%, rgba(22, 19, 11, 0) 70%);
+}
+
+.dashed-separator {
+  flex-grow: 1;
+  border-bottom: 1px dashed rgba(255, 255, 255, 0.15);
+  margin: 0 12px;
+  position: relative;
+  top: -4px;
+}
+
+/* Custom Scrollbars */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #16130b;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(212, 175, 55, 0.25);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(212, 175, 55, 0.5);
+}
+
+.hide-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+.hide-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+/* Animations */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes pulseGlow {
+
+  0%,
+  100% {
+    opacity: 0.6;
+  }
+
+  50% {
+    opacity: 1;
+  }
+}
+
+.animate-pulse-glow {
+  animation: pulseGlow 3s infinite ease-in-out;
+}

@@ -1,0 +1,452 @@
+<!DOCTYPE html>
+<html class="dark" lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+  <title>Digital Menu - AHA Restaurant | Classified Artisanal Royal Dining</title>
+  <meta name="description" content="Explore our classified culinary repertoire at AHA Restaurant: Starters, Royal Biryanis, Imperial Curries, Breads, Desserts, and Elixirs."/>
+  
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,600;0,700;1,600;1,700&display=swap" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+  
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+  <script>
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          colors: {
+            "primary": "#f2ca50",
+            "primary-container": "#d4af37",
+            "primary-fixed": "#ffe088",
+            "primary-fixed-dim": "#e9c349",
+            "on-primary": "#3c2f00",
+            "on-primary-container": "#554300",
+            "background": "#16130b",
+            "surface": "#16130b",
+            "surface-dim": "#16130b",
+            "surface-bright": "#3d392f",
+            "surface-container-lowest": "#110e07",
+            "surface-container-low": "#1f1b13",
+            "surface-container": "#231f17",
+            "surface-container-high": "#2d2a21",
+            "surface-container-highest": "#38342b",
+            "on-surface": "#eae1d4",
+            "on-surface-variant": "#d0c5af",
+            "inverse-surface": "#eae1d4",
+            "inverse-on-surface": "#343027",
+            "outline": "#99907c",
+            "outline-variant": "#4d4635",
+            "secondary": "#c9c6c5",
+            "secondary-container": "#4a4949",
+            "on-secondary": "#313030",
+            "error": "#ffb4ab",
+            "error-container": "#93000a"
+          },
+          borderRadius: {
+            "DEFAULT": "1rem",
+            "lg": "2rem",
+            "xl": "3rem",
+            "full": "9999px"
+          },
+          spacing: {
+            "gutter": "24px",
+            "container-max": "1280px",
+            "stack-gap": "40px",
+            "margin-desktop": "64px",
+            "margin-mobile": "20px"
+          },
+          fontFamily: {
+            "headline": ["Playfair Display", "serif"],
+            "display": ["Playfair Display", "serif"],
+            "body": ["Inter", "sans-serif"]
+          }
+        }
+      }
+    }
+  </script>
+  
+  <link rel="stylesheet" href="styles.css"/>
+</head>
+<body class="bg-background text-on-background font-body antialiased overflow-x-hidden pt-[100px] selection:bg-primary/30 selection:text-primary">
+
+  <!-- Ambient Glow -->
+  <div class="fixed top-1/4 left-1/3 w-96 h-96 bg-primary/10 rounded-full blur-[160px] pointer-events-none -z-10 animate-pulse-glow"></div>
+
+  <!-- Top Navigation Bar -->
+  <header class="fixed top-0 w-full z-50 glass-nav">
+    <div class="flex justify-between items-center px-margin-mobile md:px-margin-desktop py-4 max-w-container-max mx-auto">
+      <!-- Logo & Brand -->
+      <a class="flex items-center gap-3 group" href="index.html">
+        <div class="w-10 h-10 rounded-full bg-primary/20 border border-primary/40 flex items-center justify-center text-primary font-display font-bold text-xl group-hover:scale-105 transition-transform">
+          A
+        </div>
+        <div>
+          <span class="font-display text-2xl text-primary font-bold tracking-wider block leading-none">AHA</span>
+          <span class="text-[10px] uppercase tracking-widest text-on-surface-variant font-medium">Fine Dining</span>
+        </div>
+      </a>
+      
+      <!-- Main Desktop Navigation Links -->
+      <nav class="hidden xl:flex gap-1.5 items-center text-xs font-semibold">
+        <a class="nav-link flex items-center gap-1.5 px-3.5 py-2 rounded-full text-on-surface-variant hover:text-primary hover:bg-white/10 transition-all" href="index.html">
+          <span class="material-symbols-outlined text-base">home</span>
+          <span>Home</span>
+        </a>
+        <a class="nav-link flex items-center gap-1.5 px-3.5 py-2 rounded-full text-on-surface-variant hover:text-primary hover:bg-white/10 transition-all" href="menu.html">
+          <span class="material-symbols-outlined text-base">restaurant_menu</span>
+          <span>Menu</span>
+        </a>
+        <a class="nav-link flex items-center gap-1.5 px-3.5 py-2 rounded-full text-on-surface-variant hover:text-primary hover:bg-white/10 transition-all" href="reviews.html">
+          <span class="material-symbols-outlined text-base">rate_review</span>
+          <span>Reviews</span>
+        </a>
+        <a class="nav-link flex items-center gap-1.5 px-3.5 py-2 rounded-full text-on-surface-variant hover:text-primary hover:bg-white/10 transition-all" href="about.html">
+          <span class="material-symbols-outlined text-base">auto_stories</span>
+          <span>About Us</span>
+        </a>
+      </nav>
+      
+      <!-- Right Action Controls -->
+      <div class="flex items-center gap-3">
+        <!-- Order Tray / Cart Button -->
+        <button class="cart-toggle-btn relative flex items-center gap-2 px-4 py-2 rounded-full glass-card hover:bg-white/10 text-on-surface transition-all border border-white/10 text-xs font-bold" title="View Order Tray">
+          <span class="material-symbols-outlined text-base text-primary">shopping_bag</span>
+          <span class="hidden sm:inline">Order Tray</span>
+          <span class="cart-count-badge bg-primary text-on-primary text-[11px] font-bold w-5 h-5 rounded-full flex items-center justify-center hidden">0</span>
+        </button>
+
+        <!-- Book Table Action -->
+        <a href="reservation.html" class="hidden md:inline-flex items-center gap-1.5 bg-primary-container hover:bg-primary text-on-primary px-5 py-2 rounded-full text-xs font-bold transition-all shadow-[0_0_20px_rgba(212,175,55,0.25)]">
+          <span class="material-symbols-outlined text-sm">calendar_month</span>
+          <span>Book a Table</span>
+        </a>
+
+        <!-- Admin Portal Badge Link -->
+        <a href="admin.html" class="hidden lg:inline-flex items-center gap-1.5 glass-card hover:bg-primary/20 text-on-surface-variant hover:text-primary border border-white/10 hover:border-primary/40 px-3.5 py-2 rounded-full text-xs font-semibold transition-all" title="Open Staff POS & Kitchen Display">
+          <span class="w-2 h-2 rounded-full bg-green-400 animate-pulse"></span>
+          <span>Staff POS</span>
+        </a>
+        
+        <!-- Mobile menu toggle -->
+        <button id="mobileMenuToggle" class="xl:hidden text-primary p-2 flex items-center gap-1 glass-card rounded-full px-3">
+          <span class="material-symbols-outlined text-xl">menu</span>
+          <span class="text-xs font-bold">Menu</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Mobile Drawer Menu -->
+  <div id="mobileMenu" class="fixed inset-0 bg-background/95 backdrop-blur-2xl z-50 hidden flex-col justify-between p-8">
+    <div class="flex justify-between items-center border-b border-white/10 pb-6">
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 rounded-full bg-primary/20 border border-primary/40 flex items-center justify-center text-primary font-display font-bold text-xl">
+          A
+        </div>
+        <div>
+          <span class="font-display text-2xl text-primary font-bold">AHA</span>
+          <span class="text-[10px] uppercase tracking-widest text-on-surface-variant font-medium block">Fine Dining</span>
+        </div>
+      </div>
+      <button id="mobileMenuClose" class="text-on-surface-variant hover:text-primary p-2">
+        <span class="material-symbols-outlined text-3xl">close</span>
+      </button>
+    </div>
+    
+    <div class="flex flex-col gap-4 text-base font-semibold my-auto">
+      <a class="flex items-center gap-3 px-4 py-3 rounded-2xl text-on-surface-variant hover:text-primary hover:bg-white/5 transition-all" href="index.html">
+        <span class="material-symbols-outlined text-xl">home</span>
+        <span>Home</span>
+      </a>
+      <a class="flex items-center gap-3 px-4 py-3 rounded-2xl text-on-surface-variant hover:text-primary hover:bg-white/5 transition-all" href="menu.html">
+        <span class="material-symbols-outlined text-xl">restaurant_menu</span>
+        <span>Digital Menu</span>
+      </a>
+      <a class="flex items-center gap-3 px-4 py-3 rounded-2xl text-on-surface-variant hover:text-primary hover:bg-white/5 transition-all" href="reviews.html">
+        <span class="material-symbols-outlined text-xl">rate_review</span>
+        <span>Patron Reviews</span>
+      </a>
+      <a class="flex items-center gap-3 px-4 py-3 rounded-2xl text-on-surface-variant hover:text-primary hover:bg-white/5 transition-all" href="about.html">
+        <span class="material-symbols-outlined text-xl">auto_stories</span>
+        <span>About Us</span>
+      </a>
+      <a class="flex items-center gap-3 px-4 py-3 rounded-2xl text-primary bg-primary/10 border border-primary/30" href="admin.html">
+        <span class="material-symbols-outlined text-xl">dashboard</span>
+        <span>Staff POS &amp; KDS</span>
+      </a>
+    </div>
+
+    <div class="space-y-3 pt-6 border-t border-white/10">
+      <a href="reservation.html" class="w-full bg-primary hover:bg-primary-fixed-dim text-on-primary py-3.5 rounded-full font-bold text-center flex items-center justify-center gap-2 text-sm shadow-lg">
+        <span class="material-symbols-outlined text-base">calendar_month</span>
+        <span>Book a Table</span>
+      </a>
+    </div>
+  </div>
+
+  <main class="max-w-container-max mx-auto px-margin-mobile md:px-margin-desktop py-stack-gap">
+    <!-- Header & Search -->
+    <header class="text-center mb-8">
+      <span class="text-xs uppercase tracking-widest text-primary font-bold">Classified Culinary Repertoire</span>
+      <h1 class="font-display text-4xl sm:text-5xl md:text-6xl text-primary mt-2 mb-4 text-glow">
+        Our Classified Menu
+      </h1>
+      <p class="text-sm sm:text-base text-on-surface-variant max-w-2xl mx-auto mb-8">
+        Dishes classified by culinary style, courses, and dietary preferences with certified organic sourcing.
+      </p>
+      
+      <!-- Search Input -->
+      <div class="max-w-2xl mx-auto relative group mb-8">
+        <div class="absolute inset-y-0 left-0 pl-5 flex items-center pointer-events-none">
+          <span class="material-symbols-outlined text-outline">search</span>
+        </div>
+        <input id="menuSearchInput" oninput="applyFilters()" class="w-full glass-input rounded-full py-4 pl-14 pr-6 text-on-surface text-sm placeholder-outline focus:placeholder-on-surface transition-all shadow-lg" placeholder="Search dish, spice, ingredient (e.g. Mutton, Truffle, Paneer, Kebab)..." type="text"/>
+      </div>
+
+      <!-- Classification Filters 1: Dietary Preference Selector -->
+      <div class="flex overflow-x-auto hide-scrollbar pb-2 mb-6 w-full justify-start md:justify-center">
+        <div class="inline-flex items-center p-1.5 rounded-full glass-card border border-white/10 gap-1 w-max">
+          <button onclick="setDietary('all', this)" class="dietary-filter-btn whitespace-nowrap px-5 py-2 rounded-full bg-primary text-on-primary font-bold text-xs transition-all shadow-md flex items-center gap-1.5">
+            All Dishes
+          </button>
+          <button onclick="setDietary('veg', this)" class="dietary-filter-btn whitespace-nowrap px-5 py-2 rounded-full text-on-surface-variant hover:text-green-400 font-semibold text-xs transition-colors flex items-center gap-1.5">
+            <span class="w-2.5 h-2.5 rounded-full bg-green-500 inline-block shrink-0"></span>
+            <span>Pure Vegetarian</span>
+          </button>
+          <button onclick="setDietary('non-veg', this)" class="dietary-filter-btn whitespace-nowrap px-5 py-2 rounded-full text-on-surface-variant hover:text-red-400 font-semibold text-xs transition-colors flex items-center gap-1.5">
+            <span class="w-2.5 h-2.5 rounded-full bg-red-500 inline-block shrink-0"></span>
+            <span>Non-Vegetarian</span>
+          </button>
+          <button onclick="setDietary('special', this)" class="dietary-filter-btn whitespace-nowrap px-5 py-2 rounded-full text-on-surface-variant hover:text-primary font-semibold text-xs transition-colors flex items-center gap-1.5">
+            <span class="material-symbols-outlined text-primary text-sm shrink-0">stars</span>
+            <span>Chef's Specials</span>
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <!-- Classification Filters 2: Course Category Tabs -->
+    <div class="flex overflow-x-auto pb-4 mb-10 hide-scrollbar gap-3 justify-start md:justify-center" id="categoryTabs">
+      <button onclick="setCategory('all', this)" class="category-btn whitespace-nowrap px-6 py-2.5 rounded-full bg-primary text-on-primary font-bold text-xs transition-all shadow-md">All Courses</button>
+      <button onclick="setCategory('starters', this)" class="category-btn whitespace-nowrap px-6 py-2.5 rounded-full bg-white/5 border border-white/10 text-on-surface-variant hover:bg-white/10 text-xs font-semibold transition-colors">Starters &amp; Kebabs</button>
+      <button onclick="setCategory('biryani', this)" class="category-btn whitespace-nowrap px-6 py-2.5 rounded-full bg-white/5 border border-white/10 text-on-surface-variant hover:bg-white/10 text-xs font-semibold transition-colors">Royal Dum Biryanis</button>
+      <button onclick="setCategory('mains', this)" class="category-btn whitespace-nowrap px-6 py-2.5 rounded-full bg-white/5 border border-white/10 text-on-surface-variant hover:bg-white/10 text-xs font-semibold transition-colors">Imperial Curries &amp; Dal</button>
+      <button onclick="setCategory('breads', this)" class="category-btn whitespace-nowrap px-6 py-2.5 rounded-full bg-white/5 border border-white/10 text-on-surface-variant hover:bg-white/10 text-xs font-semibold transition-colors">Artisanal Breads</button>
+      <button onclick="setCategory('desserts', this)" class="category-btn whitespace-nowrap px-6 py-2.5 rounded-full bg-white/5 border border-white/10 text-on-surface-variant hover:bg-white/10 text-xs font-semibold transition-colors">Sweet Finales</button>
+      <button onclick="setCategory('drinks', this)" class="category-btn whitespace-nowrap px-6 py-2.5 rounded-full bg-white/5 border border-white/10 text-on-surface-variant hover:bg-white/10 text-xs font-semibold transition-colors">Smoked Elixirs &amp; Bar</button>
+    </div>
+
+    <!-- Main Grid: Classified Items (2 Cols) + Specials Sidebar (1 Col) -->
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-stack-gap">
+      <!-- Dishes Classified Area -->
+      <div class="lg:col-span-2 space-y-12" id="menuItemsContainer">
+        <!-- Dynamically Rendered Menu Items Will Appear Here -->
+        <div id="noResultsNotice" class="hidden text-center py-16 glass-card rounded-3xl border border-white/10">
+          <span class="material-symbols-outlined text-5xl text-on-surface-variant/40 mb-3">search_off</span>
+          <h3 class="font-headline text-xl text-on-surface mb-2">No Matching Dishes Found</h3>
+          <p class="text-xs text-on-surface-variant max-w-sm mx-auto mb-6">Try adjusting your search terms or resetting the classification filters.</p>
+          <button onclick="resetFilters()" class="bg-primary text-on-primary px-6 py-2 rounded-full text-xs font-bold">Reset Filters</button>
+        </div>
+
+      </div>
+
+      <!-- Classified Specials Sidebar -->
+      <aside class="space-y-6">
+        <div class="sticky top-28">
+          <h2 class="font-headline text-2xl text-primary mb-4 flex items-center">
+            <span class="material-symbols-outlined mr-2">local_fire_department</span> Today's Classified Deals
+          </h2>
+
+          <!-- Special Offer Card 1 -->
+          <div class="glass-card ambient-glow rounded-2xl overflow-hidden relative group mb-6 border border-primary/20">
+            <div class="bg-cover bg-center w-full h-44 group-hover:scale-105 transition-transform duration-500" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuD4CCSoTGa2UTPWCsvbvco8R5IfoMl2UsMrHuahf_4fNUHZy9A4Z0TTfoQGIWaQLQ7Den0pKeMn-V4ayMqmZQk_VWGIna0drvjoek7G9O0Z4Q2wS-dwXtnGyun8E1iqaI7A4BtBoRLrxhs7eYxYRi_X0EJWhMj_xJoPfUTSXQ1gPaBFgFrYPTpv6gVAU5_C5xvBOa_pO4N28_MlzbtB_fTAGfdX4key-1b7Hm4jlz_dGHia1vi3g23_')"></div>
+            <div class="p-6">
+              <span class="text-xs uppercase tracking-widest text-primary font-bold">Classified Combo Package</span>
+              <h3 class="font-headline text-xl text-on-surface mt-1 mb-2">The Royal Family Feast</h3>
+              <p class="text-on-surface-variant text-xs mb-4 leading-relaxed">
+                A curated 4-course selection: 2 Starters, 2 Royal Biryanis, 4 Naans, and 4 Saffron Shahi Tukdas for 4 patrons.
+              </p>
+              <div class="flex justify-between items-center pt-2 border-t border-white/10">
+                <span class="font-display text-2xl text-primary font-bold">₹ 2,499</span>
+                <button onclick="addToCart('sp-feast-1', 'The Royal Family Feast (Combo)', 2499)" class="bg-primary/20 hover:bg-primary text-primary hover:text-on-primary border border-primary/50 px-4 py-2 rounded-full transition-colors text-xs font-bold">
+                  + Add Combo
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Special Offer Card 2 -->
+          <div class="glass-card ambient-glow rounded-2xl overflow-hidden relative group border border-primary/20">
+            <div class="absolute top-4 right-4 bg-primary text-on-primary px-3 py-1 rounded-full text-xs font-bold z-10">20% OFF</div>
+            <div class="bg-cover bg-center w-full h-44 group-hover:scale-105 transition-transform duration-500" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuDUQDTqxlACEopLX0kbFchdXMlEIFE_OoK8nepvMmmr73Z3qZbCgc15GLrSB91WA4zaT49VPUoFJyDD_oEjtynzut5pC1SLEx43q0OfBYzKJzaa3S6jx2Z8N3ygeWvl5i1kLipwcw-zmTjdLLvupWXmK2P277fYrXrBjCqg-at4EqAUcROwdK6oRGMftCanofbVTuLT8ALX93UOZ26nyM2H4aNKvPL2bKypjWqWCFMlvjWyIu1Rg8nh')"></div>
+            <div class="p-6">
+              <span class="text-xs uppercase tracking-widest text-primary font-bold">Weekend Pairing</span>
+              <h3 class="font-headline text-xl text-on-surface mt-1 mb-2">Biryani &amp; Kebab Combo</h3>
+              <p class="text-on-surface-variant text-xs mb-4 leading-relaxed">
+                Choice of Awadhi Mutton or Nizami Subz Biryani paired with Galouti Kebabs and a chilled Rose cooler.
+              </p>
+              <div class="flex justify-between items-center pt-2 border-t border-white/10">
+                <div class="flex flex-col">
+                  <span class="text-on-surface-variant line-through text-xs">₹ 1,299</span>
+                  <span class="font-display text-2xl text-primary font-bold">₹ 999</span>
+                </div>
+                <button onclick="addToCart('sp-combo-1', 'Weekend Biryani & Kebab Combo', 999)" class="bg-primary/20 hover:bg-primary text-primary hover:text-on-primary border border-primary/50 px-4 py-2 rounded-full transition-colors text-xs font-bold">
+                  + Add Combo
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </aside>
+    </div>
+  </main>
+
+  <!-- Footer -->
+  <footer class="w-full bg-surface-container-lowest border-t border-white/5 text-sm mt-20">
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-gutter px-margin-mobile md:px-margin-desktop py-16 max-w-container-max mx-auto">
+      <div class="col-span-1 md:col-span-2">
+        <div class="font-display text-3xl text-primary font-bold mb-3 tracking-wider">AHA</div>
+        <p class="text-on-surface-variant max-w-sm mb-6 leading-relaxed">
+          Experience the pinnacle of culinary artistry in an atmosphere of refined glassmorphic elegance.
+        </p>
+        <div class="text-xs text-on-surface-variant/70">
+          © 2026 AHA Restaurant. All culinary rights reserved.
+        </div>
+      </div>
+
+      <div>
+        <h4 class="text-on-surface font-headline font-semibold text-base mb-4">Quick Navigation</h4>
+        <ul class="space-y-2 text-on-surface-variant">
+          <li><a class="hover:text-primary transition-colors" href="index.html">Home</a></li>
+          <li><a class="hover:text-primary transition-colors" href="about.html">About Us</a></li>
+          <li><a class="hover:text-primary transition-colors" href="menu.html">Digital Menu</a></li>
+          <li></li>
+          <li></li>
+          <li><a class="hover:text-primary transition-colors" href="reviews.html">Patron Reviews</a></li>
+          <li><a class="hover:text-primary transition-colors" href="reservation.html">Table Reservation</a></li>
+        </ul>
+      </div>
+
+      <div>
+        <h4 class="text-on-surface font-headline font-semibold text-base mb-4">Timings &amp; Location</h4>
+        <p class="text-on-surface-variant mb-2">Mon - Sun: 12:00 PM – 11:30 PM</p>
+        <p class="text-on-surface-variant mb-4">42 Royal Boulevard, Amber District</p>
+        <div class="flex gap-3 text-primary">
+          <a href="#" class="p-2 rounded-full glass-card hover:bg-primary hover:text-on-primary transition-colors">
+            <span class="material-symbols-outlined text-sm">call</span>
+          </a>
+          <a href="#" class="p-2 rounded-full glass-card hover:bg-primary hover:text-on-primary transition-colors">
+            <span class="material-symbols-outlined text-sm">mail</span>
+          </a>
+          <a href="#" class="p-2 rounded-full glass-card hover:bg-primary hover:text-on-primary transition-colors">
+            <span class="material-symbols-outlined text-sm">location_on</span>
+          </a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Order Tray / Cart Drawer -->
+  <div id="cartBackdrop" onclick="closeCartDrawer()" class="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 hidden transition-opacity"></div>
+  <aside id="cartDrawer" class="fixed top-0 right-0 h-full w-full max-w-md bg-surface-container-low border-l border-white/10 z-50 transform translate-x-full transition-transform duration-300 flex flex-col justify-between p-6 shadow-2xl">
+    <div>
+      <div class="flex justify-between items-center border-b border-white/10 pb-4 mb-4">
+        <div class="flex items-center gap-2">
+          <span class="material-symbols-outlined text-primary">shopping_bag</span>
+          <h3 class="font-headline text-xl text-on-surface">Your Order Tray</h3>
+        </div>
+        <button id="cartClose" class="text-on-surface-variant hover:text-primary p-1">
+          <span class="material-symbols-outlined">close</span>
+        </button>
+      </div>
+
+      <div id="cartItemsList" class="overflow-y-auto max-h-[calc(100vh-280px)] pr-1">
+        <!-- Injected via JavaScript -->
+      </div>
+    </div>
+
+    <div class="border-t border-white/10 pt-4 space-y-3">
+      <div class="mb-3 pb-2 border-b border-white/10">
+        <label class="block text-xs text-on-surface-variant mb-1 font-semibold">Dining Destination</label>
+        <select id="cartOrderDestination" class="w-full bg-white/5 rounded-xl py-2 px-3 text-sm text-on-surface focus:outline-none focus:border-primary/50 border border-white/10 shadow-sm cursor-pointer">
+          <option value="Parcel (Takeaway)" class="bg-[#16130b]">??? Parcel (Takeaway)</option>
+          <option value="Table 01" class="bg-[#16130b]">??? Table 01 (Main Hall)</option>
+          <option value="Table 02" class="bg-[#16130b]">??? Table 02 (Main Hall)</option>
+          <option value="Table 03" class="bg-[#16130b]">??? Table 03 (Main Hall)</option>
+          <option value="Table 04" class="bg-[#16130b]">??? Table 04 (Main Hall)</option>
+          <option value="Table 05" class="bg-[#16130b]">??? Table 05 (Main Hall)</option>
+          <option value="Table 06" class="bg-[#16130b]">??? Table 06 (Main Hall)</option>
+          <option value="Glass Pod 01" class="bg-[#16130b]">?? Glass Pod 01 (VIP)</option>
+          <option value="Glass Pod 02" class="bg-[#16130b]">?? Glass Pod 02 (VIP)</option>
+          <option value="Terrace 01" class="bg-[#16130b]">?? Terrace 01 (Sky)</option>
+          <option value="Terrace 02" class="bg-[#16130b]">?? Terrace 02 (Sky)</option>
+          <option value="Counter 01" class="bg-[#16130b]">????? Chef Counter 01</option>
+          <option value="Counter 02" class="bg-[#16130b]">????? Chef Counter 02</option>
+        </select>
+      </div>
+      <div class="flex justify-between text-sm text-on-surface-variant">
+        <span>Subtotal</span>
+        <span id="cartSubtotal" class="font-medium text-on-surface">₹0</span>
+      </div>
+      <div class="flex justify-between text-sm text-on-surface-variant">
+        <span>GST &amp; Service (5%)</span>
+        <span id="cartTaxes" class="font-medium text-on-surface">₹0</span>
+      </div>
+      <div class="flex justify-between text-base font-bold text-on-surface border-t border-white/10 pt-2">
+        <span>Total Amount</span>
+        <span id="cartTotal" class="text-primary text-xl font-display">₹0</span>
+      </div>
+      <button onclick="checkoutOrder()" class="w-full bg-primary hover:bg-primary-fixed-dim text-on-primary py-3.5 rounded-full font-bold transition-all shadow-lg mt-2">
+        Confirm &amp; Send to Kitchen
+      </button>
+    </div>
+  </aside>
+
+  <script src="app.js?v=2"></script>
+  <script>
+    window.currentCategoryFilter = 'all';
+    window.currentDietaryFilter = 'all';
+    window.currentSearchTerm = '';
+
+    function setCategory(cat, btn) {
+      window.currentCategoryFilter = cat;
+      document.querySelectorAll('.category-btn').forEach(b => {
+        b.className = 'category-btn whitespace-nowrap px-6 py-2.5 rounded-full bg-white/5 border border-white/10 text-on-surface-variant hover:bg-white/10 text-xs font-semibold transition-colors';
+      });
+      btn.className = 'category-btn whitespace-nowrap px-6 py-2.5 rounded-full bg-primary text-on-primary font-bold text-xs transition-all shadow-md';
+      if (typeof renderDynamicMenu === 'function') renderDynamicMenu();
+    }
+
+    function setDietary(diet, btn) {
+      window.currentDietaryFilter = diet;
+      document.querySelectorAll('.dietary-filter-btn').forEach(b => {
+        b.className = 'dietary-filter-btn px-5 py-2 rounded-full text-on-surface-variant hover:text-primary font-semibold text-xs transition-colors flex items-center gap-1.5';
+      });
+      btn.className = 'dietary-filter-btn px-5 py-2 rounded-full bg-primary text-on-primary font-bold text-xs transition-all shadow-md flex items-center gap-1.5';
+      if (typeof renderDynamicMenu === 'function') renderDynamicMenu();
+    }
+
+    function applyFilters() {
+      window.currentSearchTerm = document.getElementById('menuSearchInput').value.toLowerCase().trim();
+      if (typeof renderDynamicMenu === 'function') renderDynamicMenu();
+    }
+
+    function resetFilters() {
+      document.getElementById('menuSearchInput').value = '';
+      
+      const catBtns = document.querySelectorAll('.category-btn');
+      if (catBtns.length > 0) setCategory('all', catBtns[0]);
+
+      const dietBtns = document.querySelectorAll('.dietary-filter-btn');
+      if (dietBtns.length > 0) setDietary('all', dietBtns[0]);
+    }
+  </script>
+</body>
+</html>
+
+

@@ -1,0 +1,1828 @@
+<!DOCTYPE html>
+<html class="dark" lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+  <title>Real-Time Operations Portal - AHA Restaurant</title>
+  <meta name="description" content="Live Real-Time Restaurant Management POS: Interactive Floor Map, Kitchen Display System (KDS), Table Turnover, and Live Order Sync."/>
+  
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,600;0,700;1,600;1,700&display=swap" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+  
+  <!-- Chart.js CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+  <script>
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          colors: {
+            "primary": "#f2ca50",
+            "primary-container": "#d4af37",
+            "primary-fixed": "#ffe088",
+            "primary-fixed-dim": "#e9c349",
+            "on-primary": "#3c2f00",
+            "on-primary-container": "#554300",
+            "background": "#16130b",
+            "surface": "#16130b",
+            "surface-dim": "#16130b",
+            "surface-bright": "#3d392f",
+            "surface-container-lowest": "#110e07",
+            "surface-container-low": "#1f1b13",
+            "surface-container": "#231f17",
+            "surface-container-high": "#2d2a21",
+            "surface-container-highest": "#38342b",
+            "on-surface": "#eae1d4",
+            "on-surface-variant": "#d0c5af",
+            "inverse-surface": "#eae1d4",
+            "inverse-on-surface": "#343027",
+            "outline": "#99907c",
+            "outline-variant": "#4d4635",
+            "secondary": "#c9c6c5",
+            "secondary-container": "#4a4949",
+            "on-secondary": "#313030",
+            "error": "#ffb4ab",
+            "error-container": "#93000a"
+          },
+          borderRadius: {
+            "DEFAULT": "1rem",
+            "lg": "2rem",
+            "xl": "3rem",
+            "full": "9999px"
+          },
+          spacing: {
+            "gutter": "24px",
+            "container-max": "1280px",
+            "stack-gap": "40px",
+            "margin-desktop": "64px",
+            "margin-mobile": "20px"
+          },
+          fontFamily: {
+            "headline": ["Playfair Display", "serif"],
+            "display": ["Playfair Display", "serif"],
+            "body": ["Inter", "sans-serif"]
+          }
+        }
+      }
+    }
+  </script>
+  
+  <link rel="stylesheet" href="styles.css"/>
+  <style>
+    .chart-filter-btn.active {
+      background-color: rgba(242, 202, 80, 0.2);
+      color: #f2ca50;
+      border-color: rgba(242, 202, 80, 0.4);
+    }
+    
+    @media print {
+      body * {
+        visibility: hidden !important;
+      }
+      #billModalContent, #billModalContent * {
+        visibility: visible !important;
+      }
+      #billModalContent {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 100%;
+        box-shadow: none !important;
+        border: none !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        background: white !important;
+        color: black !important;
+      }
+      #billModal {
+        background: none !important;
+        backdrop-filter: none !important;
+      }
+      .no-print {
+        display: none !important;
+      }
+    }
+    
+    /* Ensure the customer tracker NEVER shows up on the admin portal */
+    #liveCustomerTracker {
+      display: none !important;
+    }
+  </style>
+</head>
+<body id="adminPortalBody" class="bg-background text-on-background font-body antialiased flex min-h-screen selection:bg-primary/30 selection:text-primary">
+
+  <!-- Ambient Glow -->
+  <div class="fixed top-10 right-1/4 w-96 h-96 bg-primary/10 rounded-full blur-[160px] pointer-events-none -z-10 animate-pulse-glow"></div>
+
+  <!-- Glass Admin Sidebar (Fixed) -->
+  <aside class="w-64 bg-surface-container-lowest border-r border-white/10 flex flex-col justify-between p-6 fixed h-full z-40">
+    <div>
+      <!-- Brand & Realtime Pulsing Status -->
+      <div class="flex items-center justify-between px-2 mb-8">
+        <div class="flex items-center gap-2">
+          <a href="index.html" class="font-display text-2xl text-primary font-bold tracking-wider">AHA</a>
+          <span class="text-[10px] bg-primary/20 text-primary border border-primary/40 px-2 py-0.5 rounded-full font-bold uppercase">POS</span>
+        </div>
+        <span class="flex items-center gap-1.5 text-[10px] text-green-400 font-bold bg-green-500/10 px-2 py-0.5 rounded-full border border-green-500/30">
+          <span class="w-1.5 h-1.5 rounded-full bg-green-400 animate-ping"></span>
+          LIVE
+        </span>
+      </div>
+
+      <!-- Navigation Links -->
+      <nav class="space-y-1.5 text-xs font-semibold">
+        <a href="#overview" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl bg-primary text-on-primary font-bold shadow-md">
+          <span class="material-symbols-outlined text-lg">grid_view</span>
+          <span>Overview</span>
+        </a>
+        <a href="#floor-map" class="flex items-center justify-between px-3.5 py-2.5 rounded-xl text-on-surface-variant hover:text-primary hover:bg-white/5 transition-colors group">
+          <div class="flex items-center gap-3">
+            <span class="material-symbols-outlined text-lg">table_bar</span>
+            <span>Live Floor Map</span>
+          </div>
+          <span id="sidebarFloorBadge" class="text-[10px] bg-cyan-500/20 text-cyan-400 font-bold px-2 py-0.5 rounded-full">0 Tables</span>
+        </a>
+        <a href="#kitchen-orders" class="flex items-center justify-between px-3.5 py-2.5 rounded-xl text-on-surface-variant hover:text-primary hover:bg-white/5 transition-colors group">
+          <div class="flex items-center gap-3">
+            <span class="material-symbols-outlined text-lg">soup_kitchen</span>
+            <span>Kitchen Orders</span>
+          </div>
+          <span id="sidebarOrdersBadge" class="text-[10px] bg-amber-500/20 text-amber-400 font-bold px-2 py-0.5 rounded-full">0 Tickets</span>
+        </a>
+
+        <a href="#inventory" class="flex items-center justify-between px-3.5 py-2.5 rounded-xl text-on-surface-variant hover:text-primary hover:bg-white/5 transition-colors group">
+          <div class="flex items-center gap-3">
+            <span class="material-symbols-outlined text-lg">inventory_2</span>
+            <span>Menu 86'd Stock</span>
+          </div>
+          <span class="text-[10px] bg-green-500/20 text-green-400 font-bold px-2 py-0.5 rounded-full">Live</span>
+        </a>
+      </nav>
+
+    </div>
+
+    <!-- Bottom Actions -->
+    <div class="border-t border-white/10 pt-4 space-y-2 text-xs text-on-surface-variant">
+      <a href="index.html" class="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-white/5 hover:text-primary transition-colors">
+        <span class="material-symbols-outlined text-lg">storefront</span>
+        <span>View Live Website</span>
+      </a>
+      <a href="index.html" class="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-white/5 hover:text-red-400 transition-colors">
+        <span class="material-symbols-outlined text-lg">logout</span>
+        <span>Exit Portal</span>
+      </a>
+    </div>
+  </aside>
+
+  <!-- Main Content Canvas -->
+  <main class="ml-64 flex-1 p-8 md:p-12 max-w-container-max w-full">
+    <!-- Header -->
+    <header class="flex flex-col sm:flex-row justify-between items-start sm:items-end mb-10 pb-6 border-b border-white/10" id="overview">
+      <div>
+        <div class="flex items-center gap-2">
+          <span class="text-xs uppercase tracking-widest text-primary font-bold">Real-Time Kitchen &amp; Floor Engine</span>
+          <span class="w-2 h-2 rounded-full bg-green-400 animate-pulse"></span>
+        </div>
+        <h1 class="font-display text-3xl sm:text-4xl text-on-surface mt-1">Live Operations Dashboard</h1>
+        <p class="text-xs text-on-surface-variant mt-1">Real-time floor occupancy, kitchen display tickets, and instantaneous dining clearing.</p>
+      </div>
+
+      <div class="mt-4 sm:mt-0 flex items-center gap-3">
+        <button onclick="openResetPosModal()" id="resetPosBtn" type="button" class="glass-card px-4 py-2 rounded-full text-xs text-error hover:bg-red-500/20 flex items-center gap-2 transition-all shadow-md border border-red-500/30 cursor-pointer" title="Wipe all data and reset to zero for a new client">
+          <span class="material-symbols-outlined text-sm">delete_forever</span>
+          <span class="font-bold">Reset POS to Zero</span>
+        </button>
+        <div class="glass-card px-4 py-2 rounded-full text-xs text-on-surface-variant flex items-center gap-2">
+          <span class="material-symbols-outlined text-primary text-sm">schedule</span>
+          <span id="liveClockDisplay" class="font-mono text-primary font-bold">12:00:00 PM</span>
+        </div>
+      </div>
+    </header>
+
+    <!-- Bento Grid: Key Operational Metrics -->
+    <section class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
+      <!-- Metric 1: Revenue -->
+      <div class="glass-card-elevated rounded-2xl p-6 flex flex-col justify-between border border-primary/30">
+        <div class="flex justify-between items-start mb-4">
+          <div class="w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center text-primary">
+            <span class="material-symbols-outlined text-xl">payments</span>
+          </div>
+          <span class="text-[10px] font-bold text-primary bg-primary/15 px-2.5 py-0.5 rounded-full">Live Sync</span>
+        </div>
+        <div>
+          <p class="text-[11px] text-on-surface-variant uppercase tracking-wider mb-1">Today's Revenue</p>
+          <p class="font-display text-2xl text-on-surface font-bold" id="revenueMetric">₹ 0</p>
+        </div>
+      </div>
+
+      <!-- Metric 2: Active Orders -->
+      <div class="glass-card-elevated rounded-2xl p-6 flex flex-col justify-between border border-white/10">
+        <div class="flex justify-between items-start mb-4">
+          <div class="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center text-primary">
+            <span class="material-symbols-outlined text-xl">soup_kitchen</span>
+          </div>
+          <span class="text-[10px] font-bold text-amber-400 bg-amber-500/10 px-2.5 py-0.5 rounded-full">Kitchen Live</span>
+        </div>
+        <div>
+          <p class="text-[11px] text-on-surface-variant uppercase tracking-wider mb-1">Active Kitchen Tickets</p>
+          <p class="font-display text-2xl text-on-surface font-bold" id="totalOrdersCount">0</p>
+        </div>
+      </div>
+
+      <!-- Metric 3: Active Tables -->
+      <div class="glass-card-elevated rounded-2xl p-6 flex flex-col justify-between border border-white/10">
+        <div class="flex justify-between items-start mb-4">
+          <div class="w-10 h-10 rounded-full bg-cyan-500/20 flex items-center justify-center text-cyan-400">
+            <span class="material-symbols-outlined text-xl">table_bar</span>
+          </div>
+          <span class="text-[10px] font-bold text-cyan-400 bg-cyan-500/10 px-2.5 py-0.5 rounded-full" id="occupancyRate">0% Floor</span>
+        </div>
+        <div>
+          <p class="text-[11px] text-on-surface-variant uppercase tracking-wider mb-1">Occupied Tables</p>
+          <p class="font-display text-2xl text-on-surface font-bold" id="occupiedTablesCount">0 / 12</p>
+        </div>
+      </div>
+
+      <!-- Metric 4: Total Sales -->
+      <div class="glass-card-elevated rounded-2xl p-6 flex flex-col justify-between border border-white/10">
+        <div class="flex justify-between items-start mb-4">
+          <div class="w-10 h-10 rounded-full bg-green-500/20 flex items-center justify-center text-green-400">
+            <span class="material-symbols-outlined text-xl">receipt_long</span>
+          </div>
+          <span class="text-[10px] font-bold text-green-400 bg-green-500/10 px-2.5 py-0.5 rounded-full">Completed</span>
+        </div>
+        <div>
+          <p class="text-[11px] text-on-surface-variant uppercase tracking-wider mb-1">Total Sales Count</p>
+          <p class="font-display text-2xl text-on-surface font-bold" id="salesMetric">0</p>
+        </div>
+      </div>
+    </section>
+
+
+    <!-- Interactive Real-Time Floor Map Grid -->
+    <section class="mb-14" id="floor-map">
+      <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
+        <div>
+          <h2 class="font-headline text-2xl text-on-surface flex items-center gap-2">
+            <span class="material-symbols-outlined text-primary">table_restaurant</span>
+            Interactive Live Floor Plan Matrix
+          </h2>
+          <p class="text-xs text-on-surface-variant">Real-time status of all dining tables. Click any table to inspect or delete/clear upon completion.</p>
+        </div>
+
+        <!-- Legend -->
+        <div class="flex flex-wrap items-center gap-3 text-xs">
+          <span class="flex items-center gap-1 text-green-400">
+            <span class="w-2.5 h-2.5 rounded-full bg-green-500 inline-block"></span> Available
+          </span>
+          <span class="flex items-center gap-1 text-primary">
+            <span class="w-2.5 h-2.5 rounded-full bg-primary inline-block"></span> Reserved
+          </span>
+          <span class="flex items-center gap-1 text-cyan-400">
+            <span class="w-2.5 h-2.5 rounded-full bg-cyan-500 inline-block"></span> Dining (Occupied)
+          </span>
+          <span class="flex items-center gap-1 text-amber-400">
+            <span class="w-2.5 h-2.5 rounded-full bg-amber-500 inline-block"></span> Ready to Clear
+          </span>
+        </div>
+      </div>
+
+      <!-- Tables Grid -->
+      <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4" id="floorMapContainer">
+        <!-- Rendered via JavaScript -->
+      </div>
+    </section>
+
+    <!-- Live Kitchen Order Queue -->
+    <section class="mb-14" id="kitchen-orders">
+      <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
+        <div>
+          <h2 class="font-headline text-2xl text-on-surface flex items-center gap-2">
+            <span class="material-symbols-outlined text-primary">soup_kitchen</span>
+            Live Kitchen Order Queue (KDS)
+          </h2>
+          <p class="text-xs text-on-surface-variant">Synchronized live with customer orders. Advance status or delete ticket once dining is complete.</p>
+        </div>
+        <div class="flex items-center gap-2">
+          <button onclick="clearAllCompletedOrders()" class="glass-card hover:bg-white/10 px-3.5 py-1.5 rounded-full text-xs text-on-surface-variant hover:text-error flex items-center gap-1 transition-colors">
+            <span class="material-symbols-outlined text-sm">cleaning_services</span> Clear Completed
+          </button>
+          <button onclick="renderAdminOrders()" class="glass-card hover:bg-white/10 px-3.5 py-1.5 rounded-full text-xs text-primary flex items-center gap-1">
+            <span class="material-symbols-outlined text-sm">refresh</span> Refresh
+          </button>
+        </div>
+      </div>
+
+      <div class="glass-card-elevated rounded-2xl border border-white/10 overflow-hidden">
+        <div class="overflow-x-auto">
+          <table class="w-full text-left text-xs">
+            <thead class="bg-white/5 border-b border-white/10 text-on-surface-variant uppercase tracking-wider">
+              <tr>
+                <th class="p-4">Ticket ID</th>
+                <th class="p-4">Table / Destination</th>
+                <th class="p-4">Items Ordered</th>
+                <th class="p-4">Total</th>
+                <th class="p-4">Status</th>
+                <th class="p-4 text-right">Real-Time Actions</th>
+              </tr>
+            </thead>
+            <tbody id="adminOrdersTableBody" class="divide-y divide-white/5">
+              <!-- Dynamically populated via JS -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+
+    <!-- Menu Item Stock / Availability Control -->
+    <section class="mb-14" id="inventory">
+      <div class="mb-6 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+        <div>
+          <h2 class="font-headline text-2xl text-on-surface flex items-center gap-2">
+            <span class="material-symbols-outlined text-primary">inventory_2</span>
+            Live Menu Stock &amp; 86'd Controls
+          </h2>
+          <p class="text-xs text-on-surface-variant">Manage live dishes or toggle availability on customer menus across all open tabs.</p>
+        </div>
+        <button onclick="openAddDishModal()" class="bg-primary hover:bg-primary-fixed-dim text-on-primary px-5 py-2.5 rounded-full font-bold text-xs flex items-center gap-2 transition-all shadow-lg">
+          <span class="material-symbols-outlined text-sm">add</span>
+          Add New Dish
+        </button>
+      </div>
+
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4" id="adminInventoryGrid">
+        <!-- Dynamically Rendered Menu Items -->
+      </div>
+    </section>
+
+    <!-- Analytics & Sales Trends -->
+    <section class="mb-14" id="sales-analytics">
+      <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
+        <div>
+          <h2 class="font-headline text-2xl text-on-surface flex items-center gap-2">
+            <span class="material-symbols-outlined text-primary">analytics</span>
+            Revenue & Sales Trends
+          </h2>
+          <p class="text-xs text-on-surface-variant">Track your restaurant's performance across daily, weekly, and monthly timelines.</p>
+        </div>
+        <div class="flex flex-wrap items-center gap-2">
+          <div class="flex items-center gap-1 glass-card p-1.5 rounded-full border border-white/10">
+            <button onclick="updateChartData('daily', this)" class="chart-filter-btn active bg-primary text-on-primary px-5 py-2 rounded-full text-xs font-bold transition-all shadow-md">Daily</button>
+            <button onclick="updateChartData('weekly', this)" class="chart-filter-btn text-on-surface-variant hover:text-primary px-5 py-2 rounded-full text-xs font-bold transition-all">Weekly</button>
+            <button onclick="updateChartData('monthly', this)" class="chart-filter-btn text-on-surface-variant hover:text-primary px-5 py-2 rounded-full text-xs font-bold transition-all">Monthly</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="glass-card-elevated rounded-2xl border border-white/10 p-6 relative w-full h-[350px]">
+        <canvas id="salesChart"></canvas>
+      </div>
+    </section>
+  </main>
+
+  <!-- Table Details Modal -->
+  <div id="tableModal" class="fixed inset-0 bg-black/80 backdrop-blur-xl z-50 hidden items-center justify-center p-6">
+    <div class="glass-card-elevated w-full max-w-lg p-8 rounded-3xl border border-primary/40 shadow-2xl relative animate-fade-in">
+      <button onclick="closeTableModal()" class="absolute top-6 right-6 text-on-surface-variant hover:text-primary">
+        <span class="material-symbols-outlined text-2xl">close</span>
+      </button>
+
+      <div class="flex items-center gap-3 mb-4">
+        <div id="modalTableBadge" class="w-12 h-12 rounded-2xl bg-primary/20 border border-primary/50 flex items-center justify-center text-primary font-bold text-lg">
+          T01
+        </div>
+        <div>
+          <h3 id="modalTableTitle" class="font-headline text-2xl text-on-surface font-bold">Table 01</h3>
+          <p id="modalTableZone" class="text-xs text-primary font-semibold">Main Dining Hall • 4 Covers</p>
+        </div>
+      </div>
+
+      <div class="glass-card p-4 rounded-2xl text-xs space-y-3 mb-6 border border-white/10" id="modalTableDetails">
+        <!-- Rendered via JS -->
+      </div>
+
+      <div class="flex gap-3">
+        <button id="modalActionBtn" onclick="handleTableModalAction()" class="flex-1 bg-primary hover:bg-primary-fixed-dim text-on-primary py-3 rounded-full text-xs font-bold transition-all shadow-md">
+          Action
+        </button>
+        <button onclick="handleTableModalDelete()" class="px-5 py-3 rounded-full glass-card hover:bg-red-500/20 text-red-400 border border-red-500/30 text-xs font-bold transition-colors">
+          Clear Table &amp; Delete
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Quick Walk-In Modal -->
+  <div id="walkinModal" class="fixed inset-0 bg-black/80 backdrop-blur-xl z-50 hidden items-center justify-center p-6">
+    <div class="glass-card-elevated w-full max-w-md p-8 rounded-3xl border border-primary/30 shadow-2xl relative">
+      <button onclick="closeWalkinModal()" class="absolute top-6 right-6 text-on-surface-variant hover:text-primary">
+        <span class="material-symbols-outlined text-2xl">close</span>
+      </button>
+
+      <h3 class="font-headline text-2xl text-on-surface mb-2">Quick Walk-In Entry</h3>
+      <p class="text-xs text-on-surface-variant mb-6">Assign an immediate table for arriving walk-in guests.</p>
+
+      <form onsubmit="handleQuickWalkin(event)" class="space-y-4">
+        <div>
+          <label class="block text-xs uppercase tracking-wider text-on-surface-variant font-semibold mb-1">Guest Name</label>
+          <input type="text" id="walkName" required placeholder="Guest Name" class="w-full glass-input px-4 py-2.5 rounded-xl text-sm focus:outline-none"/>
+        </div>
+
+        <div>
+          <label class="block text-xs uppercase tracking-wider text-on-surface-variant font-semibold mb-1">Assigned Table / Zone</label>
+          <select id="walkZone" class="w-full glass-input px-4 py-2.5 rounded-xl text-sm focus:outline-none">
+            <option value="Table 01" class="bg-surface text-on-surface">Table 01 (Main Hall - 2 Seats)</option>
+            <option value="Table 04" class="bg-surface text-on-surface">Table 04 (Main Hall - 4 Seats)</option>
+            <option value="Glass Pod 01" class="bg-surface text-on-surface">Glass Pod 01 (VIP - 6 Seats)</option>
+            <option value="Terrace 02" class="bg-surface text-on-surface">Terrace 02 (Sky Terrace - 4 Seats)</option>
+          </select>
+        </div>
+
+        <div>
+          <label class="block text-xs uppercase tracking-wider text-on-surface-variant font-semibold mb-1">Covers (Party Size)</label>
+          <input type="number" id="walkGuests" min="1" max="10" value="2" class="w-full glass-input px-4 py-2.5 rounded-xl text-sm focus:outline-none"/>
+        </div>
+
+        <button type="submit" class="w-full bg-primary hover:bg-primary-fixed-dim text-on-primary font-bold py-3 rounded-full text-sm transition-all shadow-md mt-2">
+          Seat Guests &amp; Open Tab
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Add Dish Modal -->
+  <div id="addDishModal" class="fixed inset-0 bg-black/80 backdrop-blur-xl z-50 hidden items-center justify-center p-6">
+    <div class="glass-card-elevated w-full max-w-md p-8 rounded-3xl border border-primary/30 shadow-2xl relative">
+      <button onclick="closeAddDishModal()" class="absolute top-6 right-6 text-on-surface-variant hover:text-primary">
+        <span class="material-symbols-outlined text-2xl">close</span>
+      </button>
+
+      <h3 class="font-headline text-2xl text-on-surface mb-2 flex items-center gap-2">
+        <span class="material-symbols-outlined text-primary">add_circle</span>
+        Add New Dish
+      </h3>
+      <p class="text-xs text-on-surface-variant mb-6">Create a new dish. It will instantly sync to all live customer menus.</p>
+
+      <form onsubmit="handleAddDish(event)" class="space-y-4">
+        <div>
+          <label class="block text-xs uppercase tracking-wider text-on-surface-variant font-semibold mb-1">Dish Name</label>
+          <input type="text" id="newDishName" required placeholder="e.g. Truffle Naan" class="w-full glass-input px-4 py-2.5 rounded-xl text-sm focus:outline-none"/>
+        </div>
+        
+        <div class="grid grid-cols-2 gap-4">
+          <div>
+            <label class="block text-xs uppercase tracking-wider text-on-surface-variant font-semibold mb-1">Price (₹)</label>
+            <input type="number" id="newDishPrice" required placeholder="150" min="1" class="w-full glass-input px-4 py-2.5 rounded-xl text-sm focus:outline-none"/>
+          </div>
+          <div>
+            <label class="block text-xs uppercase tracking-wider text-on-surface-variant font-semibold mb-1">Category</label>
+            <select id="newDishCategory" class="w-full glass-input px-4 py-2.5 rounded-xl text-sm focus:outline-none appearance-none">
+              <option value="starters" class="bg-surface text-on-surface">Starters</option>
+              <option value="biryani" class="bg-surface text-on-surface">Biryani</option>
+              <option value="mains" class="bg-surface text-on-surface">Mains</option>
+              <option value="breads" class="bg-surface text-on-surface">Breads</option>
+              <option value="desserts" class="bg-surface text-on-surface">Desserts</option>
+              <option value="drinks" class="bg-surface text-on-surface">Drinks</option>
+            </select>
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-xs uppercase tracking-wider text-on-surface-variant font-semibold mb-1">Dietary Tag</label>
+          <select id="newDishDietary" class="w-full glass-input px-4 py-2.5 rounded-xl text-sm focus:outline-none appearance-none">
+            <option value="veg" class="bg-surface text-on-surface">Pure Vegetarian</option>
+            <option value="non-veg" class="bg-surface text-on-surface">Non-Vegetarian</option>
+            <option value="veg special" class="bg-surface text-on-surface">Veg Chef's Special</option>
+            <option value="non-veg special" class="bg-surface text-on-surface">Non-Veg Chef's Special</option>
+          </select>
+        </div>
+
+        <div>
+          <label class="block text-xs uppercase tracking-wider text-on-surface-variant font-semibold mb-1">Description</label>
+          <textarea id="newDishDesc" required placeholder="Brief description of the dish..." rows="2" class="w-full glass-input px-4 py-2.5 rounded-xl text-sm focus:outline-none resize-none"></textarea>
+        </div>
+
+        <button type="submit" class="w-full bg-primary hover:bg-primary-fixed-dim text-on-primary font-bold py-3 rounded-full text-sm transition-all shadow-md mt-2 flex items-center justify-center gap-2">
+          <span class="material-symbols-outlined text-sm">publish</span>
+          Publish Dish Live
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Edit Dish Modal -->
+  <div id="editDishModal" class="fixed inset-0 bg-black/80 backdrop-blur-xl z-50 hidden items-center justify-center p-6">
+    <div class="glass-card-elevated w-full max-w-md p-8 rounded-3xl border border-primary/30 shadow-2xl relative">
+      <button onclick="closeEditDishModal()" class="absolute top-6 right-6 text-on-surface-variant hover:text-primary">
+        <span class="material-symbols-outlined text-2xl">close</span>
+      </button>
+
+      <h3 class="font-headline text-2xl text-on-surface mb-2 flex items-center gap-2">
+        <span class="material-symbols-outlined text-primary">edit_note</span>
+        Edit Dish Details
+      </h3>
+      <p class="text-xs text-on-surface-variant mb-6">Modify the details of this dish. Changes will instantly sync to all menus.</p>
+
+      <form onsubmit="handleEditDish(event)" class="space-y-4">
+        <div>
+          <label class="block text-xs uppercase tracking-wider text-on-surface-variant font-semibold mb-1">Dish Name</label>
+          <input type="text" id="editDishName" required class="w-full glass-input px-4 py-2.5 rounded-xl text-sm focus:outline-none"/>
+        </div>
+        
+        <div class="grid grid-cols-2 gap-4">
+          <div>
+            <label class="block text-xs uppercase tracking-wider text-on-surface-variant font-semibold mb-1">Price (₹)</label>
+            <input type="number" id="editDishPrice" required min="1" class="w-full glass-input px-4 py-2.5 rounded-xl text-sm focus:outline-none"/>
+          </div>
+          <div>
+            <label class="block text-xs uppercase tracking-wider text-on-surface-variant font-semibold mb-1">Category</label>
+            <select id="editDishCategory" class="w-full glass-input px-4 py-2.5 rounded-xl text-sm focus:outline-none appearance-none">
+              <option value="starters" class="bg-surface text-on-surface">Starters</option>
+              <option value="biryani" class="bg-surface text-on-surface">Biryani</option>
+              <option value="mains" class="bg-surface text-on-surface">Mains</option>
+              <option value="breads" class="bg-surface text-on-surface">Breads</option>
+              <option value="desserts" class="bg-surface text-on-surface">Desserts</option>
+              <option value="drinks" class="bg-surface text-on-surface">Drinks</option>
+            </select>
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-xs uppercase tracking-wider text-on-surface-variant font-semibold mb-1">Dietary Tag</label>
+          <select id="editDishDietary" class="w-full glass-input px-4 py-2.5 rounded-xl text-sm focus:outline-none appearance-none">
+            <option value="veg" class="bg-surface text-on-surface">Pure Vegetarian</option>
+            <option value="non-veg" class="bg-surface text-on-surface">Non-Vegetarian</option>
+            <option value="veg special" class="bg-surface text-on-surface">Veg Chef's Special</option>
+            <option value="non-veg special" class="bg-surface text-on-surface">Non-Veg Chef's Special</option>
+          </select>
+        </div>
+
+        <div>
+          <label class="block text-xs uppercase tracking-wider text-on-surface-variant font-semibold mb-1">Description</label>
+          <textarea id="editDishDesc" required rows="2" class="w-full glass-input px-4 py-2.5 rounded-xl text-sm focus:outline-none resize-none"></textarea>
+        </div>
+
+        <button type="submit" class="w-full bg-primary hover:bg-primary-fixed-dim text-on-primary font-bold py-3 rounded-full text-sm transition-all shadow-md mt-2 flex items-center justify-center gap-2">
+          <span class="material-symbols-outlined text-sm">save</span>
+          Save Changes
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Delete Dish Confirmation Modal -->
+  <div id="deleteDishModal" class="fixed inset-0 bg-black/80 backdrop-blur-xl z-50 hidden items-center justify-center p-6">
+    <div class="glass-card-elevated w-full max-w-sm p-8 rounded-3xl border border-red-500/30 shadow-2xl relative text-center">
+      <div class="w-16 h-16 rounded-full bg-red-500/20 text-red-500 flex items-center justify-center mx-auto mb-4">
+        <span class="material-symbols-outlined text-3xl">warning</span>
+      </div>
+      <h3 class="font-headline text-2xl text-on-surface mb-2">Delete Dish?</h3>
+      <p class="text-sm text-on-surface-variant mb-6">Are you sure you want to permanently delete <strong id="deleteDishNameDisplay" class="text-on-surface">this dish</strong>? This action cannot be undone.</p>
+      
+      <div class="flex gap-3">
+        <button onclick="closeDeleteDishModal()" class="flex-1 px-5 py-3 rounded-full glass-card hover:bg-white/10 text-on-surface text-sm font-bold transition-colors">
+          Cancel
+        </button>
+        <button onclick="executeDeleteDish()" class="flex-1 bg-red-500 hover:bg-red-600 text-white py-3 rounded-full text-sm font-bold transition-all shadow-md">
+          Confirm Delete
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <script src="app.js?v=2"></script>
+  <script>
+    let activeModalTableId = null;
+    let simInterval = null;
+
+    function initSalesChart() {
+      const ctx = document.getElementById('salesChart').getContext('2d');
+      Chart.defaults.color = '#d0c5af';
+      Chart.defaults.font.family = 'Inter';
+      
+      window.salesChartInstance = new Chart(ctx, {
+        type: 'bar',
+        data: {
+          labels: [],
+          datasets: [{
+            label: 'Revenue (₹)',
+            data: [],
+            backgroundColor: 'rgba(242, 202, 80, 0.8)',
+            borderColor: 'rgba(242, 202, 80, 1)',
+            borderWidth: 1,
+            borderRadius: 6,
+            barThickness: 'flex',
+            maxBarThickness: 40
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: {
+              display: false
+            },
+            tooltip: {
+              backgroundColor: 'rgba(22, 19, 11, 0.9)',
+              titleColor: '#f2ca50',
+              bodyColor: '#eae1d4',
+              borderColor: 'rgba(242, 202, 80, 0.3)',
+              borderWidth: 1,
+              padding: 12,
+              displayColors: false,
+              callbacks: {
+                label: function(context) {
+                  return '₹ ' + context.parsed.y.toLocaleString('en-IN');
+                }
+              }
+            }
+          },
+          scales: {
+            y: {
+              beginAtZero: true,
+              grid: {
+                color: 'rgba(255, 255, 255, 0.05)',
+                drawBorder: false
+              },
+              ticks: {
+                callback: function(value) {
+                  return '₹ ' + value.toLocaleString('en-IN');
+                }
+              }
+            },
+            x: {
+              grid: {
+                display: false,
+                drawBorder: false
+              }
+            }
+          }
+        }
+      });
+    }
+
+    function getLiveChartData(period) {
+      const orders = JSON.parse(localStorage.getItem('aha_admin_orders') || '[]');
+      const now = new Date();
+      const getOrderTotal = (orderStr) => parseInt(orderStr.replace(/[^0-9]/g, ''), 10) || 0;
+      
+      if (period === 'daily') {
+        const labels = ['10 AM', '12 PM', '2 PM', '4 PM', '6 PM', '8 PM', '10 PM'];
+        const data = [0, 0, 0, 0, 0, 0, 0];
+        const startOfDay = new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime();
+        
+        orders.forEach(o => {
+          if (o.timestamp >= startOfDay) {
+            const hour = new Date(o.timestamp).getHours();
+            const total = getOrderTotal(o.total);
+            if (hour >= 10 && hour < 12) data[0] += total;
+            else if (hour >= 12 && hour < 14) data[1] += total;
+            else if (hour >= 14 && hour < 16) data[2] += total;
+            else if (hour >= 16 && hour < 18) data[3] += total;
+            else if (hour >= 18 && hour < 20) data[4] += total;
+            else if (hour >= 20 && hour < 22) data[5] += total;
+            else if (hour >= 22) data[6] += total;
+          }
+        });
+        return { labels, data };
+      } 
+      else if (period === 'weekly') {
+        const labels = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+        const data = [0, 0, 0, 0, 0, 0, 0];
+        const startOfWeek = new Date(now.getFullYear(), now.getMonth(), now.getDate() - now.getDay()).getTime();
+        
+        orders.forEach(o => {
+          if (o.timestamp >= startOfWeek) {
+            const day = new Date(o.timestamp).getDay();
+            data[day] += getOrderTotal(o.total);
+          }
+        });
+        return { labels, data };
+      } 
+      else if (period === 'monthly') {
+        const labels = ['Week 1', 'Week 2', 'Week 3', 'Week 4', 'Week 5'];
+        const data = [0, 0, 0, 0, 0];
+        const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1).getTime();
+        
+        orders.forEach(o => {
+          if (o.timestamp >= startOfMonth) {
+            const date = new Date(o.timestamp).getDate();
+            const weekIdx = Math.floor((date - 1) / 7);
+            if(weekIdx < 5) {
+              data[weekIdx] += getOrderTotal(o.total);
+            }
+          }
+        });
+        return { labels, data };
+      }
+    }
+
+    function updateChartData(period, btn) {
+      document.querySelectorAll('.chart-filter-btn').forEach(b => {
+        b.className = 'chart-filter-btn text-on-surface-variant hover:text-primary px-5 py-2 rounded-full text-xs font-bold transition-all';
+      });
+      btn.className = 'chart-filter-btn active bg-primary text-on-primary px-5 py-2 rounded-full text-xs font-bold transition-all shadow-md';
+      
+      const chart = window.salesChartInstance;
+      const parsedData = getLiveChartData(period);
+      
+      chart.data.labels = parsedData.labels;
+      chart.data.datasets[0].data = parsedData.data;
+      
+      // Auto-scale y-axis formatting based on max value
+      const maxVal = Math.max(...parsedData.data);
+      chart.options.scales.y.ticks.callback = function(value) {
+        if (maxVal >= 100000) return '₹ ' + (value / 100000).toFixed(1) + 'L';
+        if (maxVal >= 1000) return '₹ ' + (value / 1000) + 'k';
+        return '₹ ' + value;
+      };
+      
+      chart.update();
+    }
+
+    // Floor Tables Configuration
+    const floorTables = [
+      { id: 'Table 01', zone: 'Main Hall', capacity: 2 },
+      { id: 'Table 02', zone: 'Main Hall', capacity: 2 },
+      { id: 'Table 03', zone: 'Main Hall', capacity: 4 },
+      { id: 'Table 04', zone: 'Main Hall', capacity: 4 },
+      { id: 'Table 05', zone: 'Main Hall', capacity: 6 },
+      { id: 'Table 06', zone: 'Main Hall', capacity: 6 },
+      { id: 'Glass Pod 01', zone: 'VIP Chamber', capacity: 8 },
+      { id: 'Glass Pod 02', zone: 'VIP Chamber', capacity: 8 },
+      { id: 'Terrace 01', zone: 'Sky Terrace', capacity: 4 },
+      { id: 'Terrace 02', zone: 'Sky Terrace', capacity: 4 },
+      { id: 'Counter 01', zone: 'Chef Counter', capacity: 2 },
+      { id: 'Counter 02', zone: 'Chef Counter', capacity: 2 }
+    ];
+
+    document.addEventListener('DOMContentLoaded', () => {
+      renderAdminOrders();
+      renderAdminReservations();
+      renderFloorMap();
+      startLiveClock();
+      renderAdminInventory();
+      updateDashboardMetrics();
+      initSalesChart();
+      
+      // Initialize with Live Revenue added to 'Now'
+      const activeBtn = document.querySelector('.chart-filter-btn.active');
+      if (activeBtn) updateChartData('daily', activeBtn);
+    });
+
+    function updateDashboardMetrics() {
+      const rev = parseInt(localStorage.getItem('aha_total_revenue') || '0');
+      const sales = parseInt(localStorage.getItem('aha_total_sales') || '0');
+      const revenueEl = document.getElementById('revenueMetric');
+      const salesEl = document.getElementById('salesMetric');
+      if (revenueEl) revenueEl.textContent = `₹ ${rev.toLocaleString('en-IN')}`;
+      if (salesEl) salesEl.textContent = sales;
+    }
+
+    // POS Reset Modal and Execution Handlers
+    function openResetPosModal() {
+      const modal = document.getElementById('resetPosModal');
+      if (modal) {
+        modal.classList.remove('hidden');
+        modal.classList.add('flex');
+      } else {
+        if (confirm('Are you sure you want to wipe all POS data to start fresh? This cannot be undone.')) {
+          executeResetPos();
+        }
+      }
+    }
+
+    function closeResetPosModal() {
+      const modal = document.getElementById('resetPosModal');
+      if (modal) {
+        modal.classList.add('hidden');
+        modal.classList.remove('flex');
+      }
+    }
+
+    // Removed duplicate closePosPaymentModal
+
+    function generateBill(orderId) {
+      const orders = getAdminOrders();
+      const ord = orders.find(o => o.id === orderId);
+      if (!ord) return;
+
+      const modal = document.getElementById('billModal');
+      const content = document.getElementById('billModalContentBody');
+      
+      const subtotal = ord.items.reduce((acc, item) => acc + item.price * item.quantity, 0);
+      const tax = Math.round(subtotal * 0.05);
+      const total = subtotal + tax;
+      const date = new Date().toLocaleString('en-IN', { dateStyle: 'short', timeStyle: 'short' });
+
+      content.innerHTML = `
+        <div class="text-center mb-6">
+          <h2 class="font-headline text-3xl font-bold mb-1">AHA</h2>
+          <p class="text-sm text-gray-500 font-mono">Real-Time Restaurant</p>
+          <div class="mt-4 text-xs text-gray-500 font-mono flex justify-between border-t border-b border-gray-200 py-2">
+            <span>Ticket: ${ord.id}</span>
+            <span>${date}</span>
+          </div>
+          <div class="mt-2 text-sm font-bold text-gray-800">
+            Table: ${ord.table}
+          </div>
+        </div>
+        <table class="w-full text-sm font-mono text-gray-700 mb-6">
+          <thead>
+            <tr class="border-b border-gray-200 text-left">
+              <th class="pb-2">Qty</th>
+              <th class="pb-2">Item</th>
+              <th class="pb-2 text-right">Price</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-gray-100">
+            ${ord.items.map(item => `
+              <tr>
+                <td class="py-2">${item.quantity}</td>
+                <td class="py-2">${item.name}</td>
+                <td class="py-2 text-right">₹${(item.price * item.quantity).toLocaleString('en-IN')}</td>
+              </tr>
+            `).join('')}
+          </tbody>
+        </table>
+        <div class="flex justify-between text-sm font-mono text-gray-600 mb-1">
+          <span>Subtotal</span>
+          <span>₹${subtotal.toLocaleString('en-IN')}</span>
+        </div>
+        <div class="flex justify-between text-sm font-mono text-gray-600 mb-4 pb-4 border-b border-gray-200">
+          <span>Tax (5%)</span>
+          <span>₹${tax.toLocaleString('en-IN')}</span>
+        </div>
+        <div class="flex justify-between font-headline text-xl font-bold text-gray-900 mb-8">
+          <span>Total</span>
+          <span>₹${total.toLocaleString('en-IN')}</span>
+        </div>
+        <div class="text-center text-xs text-gray-500 font-mono">
+          Thank you for dining with AHA!<br/>Please come again.
+        </div>
+      `;
+
+      if (modal) {
+        modal.classList.remove('hidden');
+        modal.classList.add('flex');
+      }
+    }
+
+    function closeBillModal() {
+      const modal = document.getElementById('billModal');
+      if (modal) {
+        modal.classList.add('hidden');
+        modal.classList.remove('flex');
+      }
+    }
+
+    function executeResetPos() {
+      // 1. Stop any background simulation timer immediately
+      if (simInterval) {
+        clearInterval(simInterval);
+        simInterval = null;
+      }
+
+      // 2. Clear all POS operations and session storage items
+      localStorage.setItem('aha_total_revenue', '0');
+      localStorage.setItem('aha_total_sales', '0');
+      localStorage.setItem('aha_admin_orders', JSON.stringify([]));
+      localStorage.setItem('aha_admin_reservations', JSON.stringify([]));
+      localStorage.removeItem('aha_active_guest_order');
+      localStorage.removeItem('aha_cart');
+
+      // 3. Re-render all dashboard elements immediately
+      updateDashboardMetrics();
+      renderAdminOrders();
+      renderAdminReservations();
+      renderFloorMap();
+
+      // 4. Reset Sales Analytics Chart cleanly
+      if (window.salesChartInstance) {
+        const activeBtn = document.querySelector('.chart-filter-btn.active') || document.querySelector('.chart-filter-btn');
+        if (activeBtn && typeof updateChartData === 'function') {
+          updateChartData('daily', activeBtn);
+        } else {
+          window.salesChartInstance.data.datasets[0].data = window.salesChartInstance.data.datasets[0].data.map(() => 0);
+          window.salesChartInstance.update();
+        }
+      }
+
+      // 5. Broadcast reset event across all tabs & play audio chime
+      if (typeof broadcastRealtimeEvent === 'function') {
+        broadcastRealtimeEvent('POS_RESET', { timestamp: Date.now() });
+      }
+      if (typeof playRealtimeChime === 'function') {
+        playRealtimeChime('table_cleared');
+      }
+
+      // 6. Dismiss modal and notify user with sleek toast
+      closeResetPosModal();
+      showToast('✨ POS Reset Complete: All orders, tables, and revenue set to zero.', 'success');
+    }
+
+    // Alias for backwards compatibility
+    window.resetSalesMetrics = openResetPosModal;
+    window.executeResetPos = executeResetPos;
+
+
+    // Dish Management & Dynamic Inventory
+    function openAddDishModal() {
+      const modal = document.getElementById('addDishModal');
+      modal.classList.remove('hidden');
+      modal.classList.add('flex');
+    }
+
+    function closeAddDishModal() {
+      const modal = document.getElementById('addDishModal');
+      modal.classList.add('hidden');
+      modal.classList.remove('flex');
+    }
+
+    function getMenuItems() {
+      return JSON.parse(localStorage.getItem('aha_menu_items') || '[]');
+    }
+
+    function handleAddDish(e) {
+      e.preventDefault();
+      const name = document.getElementById('newDishName').value;
+      const price = document.getElementById('newDishPrice').value;
+      const category = document.getElementById('newDishCategory').value;
+      const dietary = document.getElementById('newDishDietary').value;
+      const desc = document.getElementById('newDishDesc').value;
+      
+      const id = 'm-' + Math.random().toString(36).substr(2, 5);
+      const newDish = { id, name, price: parseInt(price), category, dietary, desc };
+      
+      const items = getMenuItems();
+      items.push(newDish);
+      localStorage.setItem('aha_menu_items', JSON.stringify(items));
+      
+      renderAdminInventory();
+      closeAddDishModal();
+      showToast(`Dish '${name}' published live!`, 'success');
+      broadcastRealtimeEvent('MENU_UPDATED', newDish);
+      e.target.reset();
+    }
+
+    let editingDishId = null;
+
+    function openEditDishModal(id) {
+      const items = getMenuItems();
+      const dish = items.find(d => d.id === id);
+      if (!dish) return;
+
+      editingDishId = id;
+      document.getElementById('editDishName').value = dish.name;
+      document.getElementById('editDishPrice').value = dish.price;
+      document.getElementById('editDishCategory').value = dish.category;
+      document.getElementById('editDishDietary').value = dish.dietary;
+      document.getElementById('editDishDesc').value = dish.desc;
+
+      const modal = document.getElementById('editDishModal');
+      modal.classList.remove('hidden');
+      modal.classList.add('flex');
+    }
+
+    function closeEditDishModal() {
+      const modal = document.getElementById('editDishModal');
+      modal.classList.add('hidden');
+      modal.classList.remove('flex');
+      editingDishId = null;
+    }
+
+    function handleEditDish(e) {
+      e.preventDefault();
+      if (!editingDishId) return;
+
+      const items = getMenuItems();
+      const index = items.findIndex(d => d.id === editingDishId);
+      if (index === -1) return;
+
+      items[index] = {
+        id: editingDishId,
+        name: document.getElementById('editDishName').value,
+        price: parseInt(document.getElementById('editDishPrice').value),
+        category: document.getElementById('editDishCategory').value,
+        dietary: document.getElementById('editDishDietary').value,
+        desc: document.getElementById('editDishDesc').value
+      };
+
+      localStorage.setItem('aha_menu_items', JSON.stringify(items));
+      
+      renderAdminInventory();
+      closeEditDishModal();
+      showToast(`Dish '${items[index].name}' updated successfully!`, 'success');
+      broadcastRealtimeEvent('MENU_UPDATED', items[index]);
+    }
+
+    function renderAdminInventory() {
+      const grid = document.getElementById('adminInventoryGrid');
+      if (!grid) return;
+      const items = getMenuItems();
+      
+      if (items.length === 0) {
+        grid.innerHTML = `<div class="col-span-full p-8 text-center text-on-surface-variant glass-card rounded-2xl">
+          <span class="material-symbols-outlined text-4xl mb-2 opacity-40">inventory</span>
+          <p class="font-headline text-base text-on-surface">Menu is Empty</p>
+          <p class="text-xs">Click 'Add New Dish' to build your dynamic menu.</p>
+        </div>`;
+        return;
+      }
+      
+      const outOfStock = JSON.parse(localStorage.getItem('aha_86_list') || '[]');
+      
+      grid.innerHTML = items.map(dish => {
+        const is86d = outOfStock.includes(dish.name);
+        const btnClass = is86d ? 'bg-red-500/20 text-red-400 border border-red-500/40' : 'bg-green-500/20 text-green-400 border border-green-500/40';
+        const btnText = is86d ? "86'd (Sold Out)" : 'In Stock';
+        
+        return `
+        <div class="glass-card p-5 rounded-2xl flex items-center justify-between group relative">
+          <div>
+            <h4 class="font-headline text-sm font-semibold text-on-surface">${dish.name}</h4>
+            <span class="text-xs text-primary">₹ ${dish.price} • ${dish.category.charAt(0).toUpperCase() + dish.category.slice(1)}</span>
+          </div>
+          <div class="flex items-center gap-2">
+            <button onclick="toggleStock(this)" class="stock-toggle ${btnClass} px-3 py-1 rounded-full text-xs font-semibold whitespace-nowrap">
+              ${btnText}
+            </button>
+            <button onclick="openEditDishModal('${dish.id}')" class="p-1 rounded-full hover:bg-blue-500/20 text-on-surface-variant hover:text-blue-400 transition-colors" title="Edit Dish Details">
+              <span class="material-symbols-outlined text-sm">edit</span>
+            </button>
+            <button onclick="openDeleteDishModal('${dish.id}')" class="p-1 rounded-full hover:bg-red-500/20 text-on-surface-variant hover:text-red-400 transition-colors" title="Delete Dish completely">
+              <span class="material-symbols-outlined text-sm">delete</span>
+            </button>
+          </div>
+        </div>
+        `;
+      }).join('');
+    }
+
+    let deletingDishId = null;
+
+    function openDeleteDishModal(id) {
+      deletingDishId = id;
+      const items = getMenuItems();
+      const dish = items.find(d => d.id === id);
+      if (!dish) return;
+      document.getElementById('deleteDishNameDisplay').textContent = dish.name;
+      
+      const modal = document.getElementById('deleteDishModal');
+      modal.classList.remove('hidden');
+      modal.classList.add('flex');
+    }
+
+    function closeDeleteDishModal() {
+      deletingDishId = null;
+      const modal = document.getElementById('deleteDishModal');
+      modal.classList.add('hidden');
+      modal.classList.remove('flex');
+    }
+
+    function executeDeleteDish() {
+      if (!deletingDishId) return;
+      let items = getMenuItems();
+      const dish = items.find(d => d.id === deletingDishId);
+      const dishName = dish ? dish.name : 'Dish';
+      
+      items = items.filter(d => d.id !== deletingDishId);
+      localStorage.setItem('aha_menu_items', JSON.stringify(items));
+      
+      // Also remove from 86'd list if it was there
+      let outOfStock = JSON.parse(localStorage.getItem('aha_86_list') || '[]');
+      if (outOfStock.includes(dishName)) {
+        outOfStock = outOfStock.filter(name => name !== dishName);
+        localStorage.setItem('aha_86_list', JSON.stringify(outOfStock));
+      }
+      
+      renderAdminInventory();
+      closeDeleteDishModal();
+      showToast(`${dishName} deleted from database.`, 'info');
+      broadcastRealtimeEvent('MENU_UPDATED', { deleted: true });
+    }
+
+    // Real-Time Clock
+    function startLiveClock() {
+      setInterval(() => {
+        const now = new Date();
+        const timeStr = now.toLocaleTimeString();
+        const clockEl = document.getElementById('liveClockDisplay');
+        if (clockEl) clockEl.textContent = timeStr;
+      }, 1000);
+    }
+
+    // Floor Map Renderer
+    function renderFloorMap() {
+      const container = document.getElementById('floorMapContainer');
+      const orders = getAdminOrders();
+      const reservations = getAdminReservations();
+
+      let occupiedCount = 0;
+
+      container.innerHTML = floorTables.map(t => {
+        const activeOrder = orders.find(o => o.table === t.id);
+        const activeRes = reservations.find(r => r.zone.includes(t.id) || (r.zone.includes('Main') && t.id.startsWith('Table')));
+
+        let status = 'Available';
+        let statusBadgeColor = 'border-green-500/40 bg-green-500/10 text-green-400';
+        let cardBorder = 'hover:border-green-500/50';
+
+        if (activeOrder) {
+          if (activeOrder.status === 'Dining Completed') {
+            status = 'Ready to Clear';
+            statusBadgeColor = 'border-amber-500/50 bg-amber-500/20 text-amber-400';
+            cardBorder = 'border-amber-500/40';
+          } else {
+            status = 'Occupied (Dining)';
+            statusBadgeColor = 'border-cyan-500/50 bg-cyan-500/20 text-cyan-400';
+            cardBorder = 'border-cyan-500/40';
+            occupiedCount++;
+          }
+        } else if (activeRes && activeRes.status !== 'Dining Completed') {
+          if (activeRes.status === 'Seated & Dining') {
+            status = 'Occupied (Dining)';
+            statusBadgeColor = 'border-cyan-500/50 bg-cyan-500/20 text-cyan-400';
+            cardBorder = 'border-cyan-500/40';
+            occupiedCount++;
+          } else {
+            status = 'Reserved';
+            statusBadgeColor = 'border-primary/50 bg-primary/20 text-primary';
+            cardBorder = 'border-primary/40';
+          }
+        }
+
+        return `
+          <div onclick="openTableModal('${t.id}')" class="glass-card p-4 rounded-2xl cursor-pointer border ${cardBorder} transition-all hover:scale-105 flex flex-col justify-between min-h-[120px]">
+            <div class="flex justify-between items-start mb-2">
+              <span class="font-headline font-bold text-on-surface text-sm">${t.id}</span>
+              <span class="text-[10px] text-on-surface-variant">${t.capacity}P</span>
+            </div>
+            <div>
+              <span class="px-2 py-0.5 rounded-full text-[10px] font-bold border block text-center truncate ${statusBadgeColor}">
+                ${status}
+              </span>
+              <p class="text-[10px] text-on-surface-variant text-center mt-1.5 truncate">${t.zone}</p>
+            </div>
+          </div>
+        `;
+      }).join('');
+
+      const occEl = document.getElementById('occupiedTablesCount');
+      if (occEl) occEl.textContent = `${occupiedCount} / ${floorTables.length}`;
+      const rateEl = document.getElementById('occupancyRate');
+      if (rateEl) rateEl.textContent = `${Math.round((occupiedCount / floorTables.length) * 100)}% Floor`;
+      const sideFloorBadge = document.getElementById('sidebarFloorBadge');
+      if (sideFloorBadge) sideFloorBadge.textContent = `${occupiedCount} Occupied`;
+    }
+
+    function openTableModal(tableId) {
+      activeModalTableId = tableId;
+      const tableConfig = floorTables.find(t => t.id === tableId);
+      const orders = getAdminOrders();
+      const activeOrder = orders.find(o => o.table === tableId);
+
+      document.getElementById('modalTableTitle').textContent = tableId;
+      document.getElementById('modalTableBadge').textContent = tableId.replace(/[^0-9]/g, '') || tableId.substring(0, 3);
+      document.getElementById('modalTableZone').textContent = `${tableConfig.zone} • Capacity ${tableConfig.capacity} Guests`;
+
+      const detailsEl = document.getElementById('modalTableDetails');
+      const actionBtn = document.getElementById('modalActionBtn');
+
+      if (activeOrder) {
+        detailsEl.innerHTML = `
+          <div class="flex justify-between border-b border-white/10 pb-2">
+            <span class="text-on-surface-variant">Current Order Ticket</span>
+            <span class="font-bold text-primary">${activeOrder.id}</span>
+          </div>
+          <div class="flex justify-between border-b border-white/10 pb-2">
+            <span class="text-on-surface-variant">Dishes Ordered</span>
+            <span class="text-on-surface font-medium">${activeOrder.items.map(i => `${i.name} (x${i.quantity})`).join(', ')}</span>
+          </div>
+          <div class="flex justify-between border-b border-white/10 pb-2">
+            <span class="text-on-surface-variant">Current Status</span>
+            <span class="font-bold text-cyan-400">${activeOrder.status}</span>
+          </div>
+          <div class="flex justify-between">
+            <span class="text-on-surface-variant">Running Total</span>
+            <span class="font-bold text-primary text-sm">${activeOrder.total}</span>
+          </div>
+        `;
+        actionBtn.textContent = activeOrder.status === 'Dining Completed' ? 'Clear Table' : 'Advance Dining Status';
+      } else {
+        detailsEl.innerHTML = `
+          <div class="py-4 text-center text-on-surface-variant">
+            <span class="material-symbols-outlined text-3xl text-green-400 mb-1">check_circle</span>
+            <p class="font-semibold text-on-surface">Table is Clean &amp; Available</p>
+            <p class="text-[11px]">Ready to seat arriving walk-in patrons.</p>
+          </div>
+        `;
+        actionBtn.textContent = 'Seat New Guest Here';
+      }
+
+      const modal = document.getElementById('tableModal');
+      modal.classList.remove('hidden');
+      modal.classList.add('flex');
+    }
+
+    function closeTableModal() {
+      const modal = document.getElementById('tableModal');
+      modal.classList.add('hidden');
+      modal.classList.remove('flex');
+    }
+
+    function handleTableModalAction() {
+      if (!activeModalTableId) return;
+      const orders = getAdminOrders();
+      const activeOrder = orders.find(o => o.table === activeModalTableId);
+
+      if (activeOrder) {
+        advanceOrderStatus(activeOrder.id);
+      } else {
+        closeTableModal();
+        openNewWalkinModal();
+        document.getElementById('walkZone').value = activeModalTableId;
+      }
+      closeTableModal();
+    }
+
+    function handleTableModalDelete() {
+      if (!activeModalTableId) return;
+      const orders = getAdminOrders();
+      const activeOrder = orders.find(o => o.table === activeModalTableId);
+      if (activeOrder) {
+        deleteOrder(activeOrder.id);
+      }
+
+      let resList = getAdminReservations();
+      resList = resList.filter(r => !r.zone.includes(activeModalTableId));
+      localStorage.setItem('aha_admin_reservations', JSON.stringify(resList));
+
+      renderFloorMap();
+      renderAdminReservations();
+      closeTableModal();
+      showToast(`${activeModalTableId} cleared and reset to available!`, 'success');
+      broadcastRealtimeEvent('TABLE_CLEARED_DELETED', { table: activeModalTableId });
+    }
+
+    function getAdminOrders() {
+      const stored = localStorage.getItem('aha_admin_orders');
+      if (!stored) {
+        const defaultOrders = [];
+        localStorage.setItem('aha_admin_orders', JSON.stringify(defaultOrders));
+        return defaultOrders;
+      }
+      return JSON.parse(stored);
+    }
+
+    function renderAdminOrders() {
+      const allOrders = getAdminOrders();
+      const tbody = document.getElementById('adminOrdersTableBody');
+      const counterEl = document.getElementById('totalOrdersCount');
+      if (counterEl) counterEl.textContent = allOrders.length;
+      const sideOrdersBadge = document.getElementById('sidebarOrdersBadge');
+      if (sideOrdersBadge) sideOrdersBadge.textContent = `${allOrders.length} Tickets`;
+
+      if (allOrders.length === 0) {
+        tbody.innerHTML = `
+          <tr>
+            <td colspan="6" class="p-8 text-center text-on-surface-variant">
+              <span class="material-symbols-outlined text-4xl mb-2 opacity-40">done_all</span>
+              <p class="font-headline text-base text-on-surface">No Active Kitchen Tickets</p>
+              <p class="text-xs">All dining completed &amp; cleared.</p>
+            </td>
+          </tr>
+        `;
+        renderFloorMap();
+        return;
+      }
+
+      const now = Date.now();
+
+      tbody.innerHTML = allOrders.map(ord => {
+        let statusBadgeClass = 'bg-amber-500/20 text-amber-400 border border-amber-500/30';
+        let actionBtnText = 'Mark Plated';
+        let actionBtnClass = 'glass-card hover:bg-white/10 text-on-surface hover:text-primary';
+
+        if (ord.status === 'Plated') {
+          statusBadgeClass = 'bg-blue-500/20 text-blue-400 border border-blue-500/30';
+          actionBtnText = 'Mark Served';
+        } else if (ord.status === 'Served' || ord.status === 'Dining') {
+          statusBadgeClass = 'bg-cyan-500/20 text-cyan-400 border border-cyan-500/30';
+          actionBtnText = 'Complete Dining';
+          actionBtnClass = 'bg-primary/20 hover:bg-primary text-primary hover:text-on-primary border border-primary/40';
+        } else if (ord.status === 'Bill Requested') {
+          statusBadgeClass = 'bg-purple-500/20 text-purple-400 border border-purple-500/30 animate-pulse';
+          actionBtnText = 'Settle Bill';
+          actionBtnClass = 'bg-primary hover:bg-primary-fixed-dim text-on-primary font-bold shadow-lg';
+        } else if (ord.status === 'Dining Completed') {
+          statusBadgeClass = 'bg-green-500/20 text-green-400 border border-green-500/30';
+          actionBtnText = 'Clear Table (Delete)';
+          actionBtnClass = 'bg-green-500/20 hover:bg-green-500 text-green-300 hover:text-black border border-green-500/40';
+        }
+
+        return `
+          <tr class="hover:bg-white/5 transition-colors">
+            <td class="p-4 font-bold text-primary">${ord.id}</td>
+            <td class="p-4 font-semibold text-on-surface">
+              ${ord.table}
+              <div class="text-[9px] mt-1 uppercase tracking-widest ${ord.orderType === 'Online' ? 'text-blue-400' : ord.orderType === 'Walk-in' ? 'text-yellow-400' : 'text-primary'}">
+                ${ord.orderType || 'Table'}
+              </div>
+            </td>
+            <td class="p-4 text-on-surface-variant max-w-xs">
+              ${ord.items.map(i => `${i.name} (x${i.quantity})`).join(', ')}
+            </td>
+            <td class="p-4 font-semibold text-primary">${ord.total}</td>
+            <td class="p-4">
+              <span class="px-2.5 py-1 rounded-full text-[10px] font-bold ${statusBadgeClass}">
+                ${ord.status}
+              </span>
+            </td>
+            <td class="p-4 text-right flex items-center justify-end gap-2">
+              ${(ord.status === 'Served' || ord.status === 'Dining' || ord.status === 'Bill Requested' || ord.status === 'Dining Completed') && ord.paymentMode === 'Unpaid (Open Tab)' ? `
+              <button onclick="generateBill('${ord.id}')" class="p-1.5 rounded-lg text-on-surface-variant hover:text-primary hover:bg-primary/10 transition-colors" title="Generate Bill / Print Receipt">
+                <span class="material-symbols-outlined text-base">receipt_long</span>
+              </button>
+              ` : ''}
+              <button onclick="advanceOrderStatus('${ord.id}')" class="${actionBtnClass} px-3 py-1 rounded-lg text-xs font-semibold transition-all">
+                ${actionBtnText}
+              </button>
+              ${ord.status === 'Dining Completed' ? `
+              <button onclick="deleteOrder('${ord.id}')" class="p-1.5 rounded-lg text-on-surface-variant hover:text-error hover:bg-red-500/10 transition-colors" title="Delete record after dining complete">
+                <span class="material-symbols-outlined text-base">delete</span>
+              </button>
+              ` : ''}
+            </td>
+          </tr>
+        `;
+      }).join('');
+
+      renderFloorMap();
+    }
+
+    let currentSettlingOrderId = null;
+
+    function advanceOrderStatus(orderId) {
+      let orders = getAdminOrders();
+      const ord = orders.find(o => o.id === orderId);
+      if (ord) {
+        if (ord.status === 'Cooking' || ord.status === 'In Kitchen') {
+          ord.status = 'Plated';
+          showToast(`Ticket ${orderId} marked as Plated & Ready for Service.`, 'info');
+        } else if (ord.status === 'Plated') {
+          ord.status = 'Served';
+          showToast(`Ticket ${orderId} served to ${ord.table}. Guests are dining.`, 'info');
+        } else if (ord.status === 'Served' || ord.status === 'Dining' || ord.status === 'Bill Requested') {
+          if (ord.paymentMode === 'Unpaid (Open Tab)') {
+            currentSettlingOrderId = orderId;
+            const modal = document.getElementById('posPaymentModal');
+            if(modal) {
+              modal.classList.remove('hidden', 'opacity-0');
+              modal.classList.add('flex', 'opacity-100');
+              document.getElementById('posPaymentAmount').textContent = ord.total;
+            }
+            return;
+          }
+          ord.status = 'Dining Completed';
+          showToast(`Dining completed for ${ord.table}! Click again or delete to clear table.`, 'success');
+        } else {
+          // If already completed and user clicks, delete it
+          deleteOrder(orderId);
+          return;
+        }
+        localStorage.setItem('aha_admin_orders', JSON.stringify(orders));
+        broadcastRealtimeEvent('ORDER_STATUS_CHANGED', ord);
+        renderAdminOrders();
+      }
+    }
+
+    function settlePosPayment(method) {
+      if (!currentSettlingOrderId) return;
+      
+      let orders = getAdminOrders();
+      const ord = orders.find(o => o.id === currentSettlingOrderId);
+      if (ord) {
+        ord.status = 'Dining Completed';
+        ord.paymentMode = method;
+        
+        // Extract numeric value from "₹ 1,200" string
+        const numStr = ord.total.replace(/[^0-9]/g, '');
+        const totalVal = parseInt(numStr, 10) || 0;
+        
+        let totalRevenue = parseInt(localStorage.getItem('aha_total_revenue') || '0');
+        let totalSales = parseInt(localStorage.getItem('aha_total_sales') || '0');
+        totalRevenue += totalVal;
+        totalSales += 1;
+        localStorage.setItem('aha_total_revenue', totalRevenue);
+        localStorage.setItem('aha_total_sales', totalSales);
+
+        localStorage.setItem('aha_admin_orders', JSON.stringify(orders));
+        broadcastRealtimeEvent('ORDER_STATUS_CHANGED', ord);
+        renderAdminOrders();
+        if (typeof updateDashboardMetrics === 'function') updateDashboardMetrics();
+        showToast(`Bill settled via ${method}. Table ${ord.table} dining completed & revenue recorded.`, 'success');
+      }
+      
+      closePosPaymentModal();
+    }
+
+    function closePosPaymentModal() {
+      currentSettlingOrderId = null;
+      const modal = document.getElementById('posPaymentModal');
+      if(modal) {
+        modal.classList.add('hidden');
+        modal.classList.remove('flex');
+        
+        // Remove style that might be overriding opacity if any
+        modal.style.opacity = '';
+        modal.classList.remove('opacity-100');
+        modal.classList.add('opacity-0');
+      }
+    }
+
+    function deleteOrder(orderId) {
+      let orders = getAdminOrders();
+      orders = orders.filter(o => o.id !== orderId);
+      localStorage.setItem('aha_admin_orders', JSON.stringify(orders));
+      renderAdminOrders();
+      showToast(`Order ${orderId} deleted & table marked clean.`, 'success');
+      broadcastRealtimeEvent('TABLE_CLEARED_DELETED', { orderId });
+    }
+
+    function clearAllCompletedOrders() {
+      let orders = getAdminOrders();
+      const remaining = orders.filter(o => o.status !== 'Dining Completed');
+      const removedCount = orders.length - remaining.length;
+      localStorage.setItem('aha_admin_orders', JSON.stringify(remaining));
+      renderAdminOrders();
+      if (removedCount > 0) {
+        showToast(`Cleared ${removedCount} completed dining order(s).`, 'success');
+        broadcastRealtimeEvent('TABLE_CLEARED_DELETED', { count: removedCount });
+      } else {
+        showToast(`No completed orders to clear.`, 'info');
+      }
+    }
+
+    function getAdminReservations() {
+      const stored = localStorage.getItem('aha_admin_reservations');
+      if (!stored) {
+        const defaultReservations = [];
+        localStorage.setItem('aha_admin_reservations', JSON.stringify(defaultReservations));
+        return defaultReservations;
+      }
+      return JSON.parse(stored);
+    }
+
+    function renderAdminReservations() {
+      const allRes = getAdminReservations();
+      const tbody = document.getElementById('adminReservationsTableBody');
+      const sideResBadge = document.getElementById('sidebarResBadge');
+      if (sideResBadge) sideResBadge.textContent = `${allRes.length} Active`;
+
+      if (!tbody) {
+        renderFloorMap();
+        return;
+      }
+
+      if (allRes.length === 0) {
+        tbody.innerHTML = `
+          <tr>
+            <td colspan="7" class="p-8 text-center text-on-surface-variant">
+              <span class="material-symbols-outlined text-4xl mb-2 opacity-40">table_restaurant</span>
+              <p class="font-headline text-base text-on-surface">No Floor Bookings Active</p>
+              <p class="text-xs">All tables are clean and ready for walk-ins.</p>
+            </td>
+          </tr>
+        `;
+        renderFloorMap();
+        return;
+      }
+
+      tbody.innerHTML = allRes.map(res => {
+        let statusBadgeClass = 'bg-primary/20 text-primary border border-primary/30';
+        let actionBtnText = 'Seat Guests';
+        let actionBtnClass = 'glass-card hover:bg-primary hover:text-on-primary';
+
+        if (res.status === 'Seated' || res.status === 'Seated & Dining') {
+          statusBadgeClass = 'bg-cyan-500/20 text-cyan-400 border border-cyan-500/30';
+          actionBtnText = 'Complete Dining (Clear)';
+          actionBtnClass = 'bg-cyan-500/20 hover:bg-cyan-500 text-cyan-300 hover:text-black border border-cyan-500/40';
+        } else if (res.status === 'Dining Completed') {
+          statusBadgeClass = 'bg-green-500/20 text-green-400 border border-green-500/30';
+          actionBtnText = 'Clear Table (Delete)';
+          actionBtnClass = 'bg-green-500/20 hover:bg-green-500 text-green-300 hover:text-black border border-green-500/40';
+        }
+
+        return `
+          <tr class="hover:bg-white/5 transition-colors">
+            <td class="p-4 font-bold text-primary">${res.id}</td>
+            <td class="p-4 font-semibold text-on-surface">${res.name}</td>
+            <td class="p-4 text-on-surface-variant">${res.date} • ${res.time}</td>
+            <td class="p-4 text-on-surface">${res.guests}</td>
+            <td class="p-4 text-primary font-medium">${res.zone}</td>
+            <td class="p-4">
+              <span class="px-2.5 py-1 rounded-full text-[10px] font-bold ${statusBadgeClass}">
+                ${res.status}
+              </span>
+            </td>
+            <td class="p-4 text-right flex items-center justify-end gap-2">
+              <button onclick="handleReservationAction('${res.id}')" class="${actionBtnClass} px-3 py-1 rounded-lg text-xs font-semibold transition-all">
+                ${actionBtnText}
+              </button>
+              <button onclick="deleteReservation('${res.id}')" class="p-1.5 rounded-lg text-on-surface-variant hover:text-error hover:bg-red-500/10 transition-colors" title="Delete booking after dining complete">
+                <span class="material-symbols-outlined text-base">delete</span>
+              </button>
+            </td>
+          </tr>
+        `;
+      }).join('');
+
+      renderFloorMap();
+    }
+
+    function handleReservationAction(resId) {
+      let resList = getAdminReservations();
+      const res = resList.find(r => r.id === resId);
+      if (res) {
+        if (res.status === 'Confirmed') {
+          res.status = 'Seated & Dining';
+          showToast(`Guests for ${res.name} (${resId}) seated in ${res.zone}.`, 'info');
+          localStorage.setItem('aha_admin_reservations', JSON.stringify(resList));
+          broadcastRealtimeEvent('ORDER_STATUS_CHANGED', res);
+          renderAdminReservations();
+        } else if (res.status === 'Seated' || res.status === 'Seated & Dining') {
+          res.status = 'Dining Completed';
+          showToast(`Dining completed for ${res.name}! Table is ready to be cleared.`, 'success');
+          localStorage.setItem('aha_admin_reservations', JSON.stringify(resList));
+          broadcastRealtimeEvent('ORDER_STATUS_CHANGED', res);
+          renderAdminReservations();
+        } else {
+          // If already completed and clicked again, delete it
+          deleteReservation(resId);
+        }
+      }
+    }
+
+    function deleteReservation(resId) {
+      let resList = getAdminReservations();
+      resList = resList.filter(r => r.id !== resId);
+      localStorage.setItem('aha_admin_reservations', JSON.stringify(resList));
+      renderAdminReservations();
+      showToast(`Reservation ${resId} deleted & table marked clean for new guests.`, 'success');
+      broadcastRealtimeEvent('TABLE_CLEARED_DELETED', { resId });
+    }
+
+    function clearAllCompletedReservations() {
+      let resList = getAdminReservations();
+      const remaining = resList.filter(r => r.status !== 'Dining Completed');
+      const removedCount = resList.length - remaining.length;
+      localStorage.setItem('aha_admin_reservations', JSON.stringify(remaining));
+      renderAdminReservations();
+      if (removedCount > 0) {
+        showToast(`Cleared ${removedCount} completed dining table(s).`, 'success');
+        broadcastRealtimeEvent('TABLE_CLEARED_DELETED', { count: removedCount });
+      } else {
+        showToast(`No completed dining tables to clear.`, 'info');
+      }
+    }
+
+    function initStock() {
+      const outOfStock = JSON.parse(localStorage.getItem('aha_86_list') || '[]');
+      document.querySelectorAll('.stock-toggle').forEach(btn => {
+        const itemCard = btn.closest('.glass-card');
+        if(!itemCard) return;
+        const h4 = itemCard.querySelector('h4');
+        if(!h4) return;
+        const itemName = h4.textContent.trim();
+        if (outOfStock.includes(itemName)) {
+          btn.textContent = "86'd (Sold Out)";
+          btn.className = 'stock-toggle bg-red-500/20 text-red-400 border border-red-500/40 px-3 py-1 rounded-full text-xs font-semibold';
+        } else {
+          btn.textContent = 'In Stock';
+          btn.className = 'stock-toggle bg-green-500/20 text-green-400 border border-green-500/40 px-3 py-1 rounded-full text-xs font-semibold';
+        }
+      });
+    }
+
+    function toggleStock(btn) {
+      const itemCard = btn.closest('.glass-card');
+      const itemName = itemCard.querySelector('h4').textContent.trim();
+      let outOfStock = JSON.parse(localStorage.getItem('aha_86_list') || '[]');
+
+      if (btn.textContent.trim() === 'In Stock') {
+        btn.textContent = "86'd (Sold Out)";
+        btn.className = 'stock-toggle bg-red-500/20 text-red-400 border border-red-500/40 px-3 py-1 rounded-full text-xs font-semibold';
+        
+        if (!outOfStock.includes(itemName)) {
+          outOfStock.push(itemName);
+          localStorage.setItem('aha_86_list', JSON.stringify(outOfStock));
+        }
+
+        showToast(`'${itemName}' marked 86'd. Menu updated.`, 'error');
+        broadcastRealtimeEvent('STOCK_UPDATED', { itemName, available: false });
+      } else {
+        btn.textContent = 'In Stock';
+        btn.className = 'stock-toggle bg-green-500/20 text-green-400 border border-green-500/40 px-3 py-1 rounded-full text-xs font-semibold';
+        
+        outOfStock = outOfStock.filter(item => item !== itemName);
+        localStorage.setItem('aha_86_list', JSON.stringify(outOfStock));
+
+        showToast(`'${itemName}' restored to live stock.`, 'success');
+        broadcastRealtimeEvent('STOCK_UPDATED', { itemName, available: true });
+      }
+    }
+
+    function openNewWalkinModal() {
+      const modal = document.getElementById('walkinModal');
+      modal.classList.remove('hidden');
+      modal.classList.add('flex');
+    }
+
+    function closeWalkinModal() {
+      const modal = document.getElementById('walkinModal');
+      modal.classList.add('hidden');
+      modal.classList.remove('flex');
+    }
+
+    function performWalkin() {
+      const name = document.getElementById('walkName').value;
+      const zone = document.getElementById('walkZone').value;
+      const guests = document.getElementById('walkGuests').value + ' Guests';
+      const id = 'AHA-' + Math.floor(1000 + Math.random() * 9000);
+
+      const resList = getAdminReservations();
+      resList.unshift({
+        id,
+        name,
+        date: 'Today',
+        time: 'Walk-In',
+        guests,
+        zone,
+        status: 'Seated & Dining'
+      });
+      localStorage.setItem('aha_admin_reservations', JSON.stringify(resList));
+
+      renderAdminReservations();
+      closeWalkinModal();
+      broadcastRealtimeEvent('NEW_RESERVATION_PLACED', { id, name, zone });
+      document.getElementById('walkName').value = '';
+      return { name, zone };
+    }
+
+    function handleQuickWalkin(e) {
+      e.preventDefault();
+      const { name, zone } = performWalkin();
+      showToast(`Walk-In registered & ${zone} assigned for ${name}!`, 'success');
+    }
+
+    function handleQuickWalkinAndOrder() {
+      const form = document.getElementById('walkName').closest('form');
+      if (!form.checkValidity()) {
+        form.reportValidity();
+        return;
+      }
+      performWalkin();
+      window.location.href = 'menu.html';
+    }
+
+    // Real-Time Simulation Engine
+    function toggleSimulationMode(checkbox) {
+      if (checkbox.checked) {
+        showToast('⚡ Live POS Simulation Mode Enabled: Generating live tickets & activity.', 'success');
+        simInterval = setInterval(() => {
+          simulateIncomingTicket();
+        }, 14000);
+      } else {
+        clearInterval(simInterval);
+        showToast('Simulation Mode Paused.', 'info');
+      }
+    }
+
+    function simulateIncomingTicket() {
+      const sampleNames = ['Rohan Singhania', 'Natasha Sen', 'Devraj Oberoi', 'Tara Kapoor'];
+      const sampleDishes = [
+        [{ name: 'Black Truffle Galouti', quantity: 2 }, { name: '24K Gold Shahi Tukda', quantity: 1 }],
+        [{ name: 'Awadhi Mutton Dum Biryani', quantity: 2 }, { name: 'Smoked Saffron Elixir', quantity: 2 }],
+        [{ name: 'Saffron Paneer Tikka', quantity: 1 }, { name: 'Dal-e-AHA', quantity: 1 }, { name: 'Truffle Naan', quantity: 2 }]
+      ];
+      const randomDishSet = sampleDishes[Math.floor(Math.random() * sampleDishes.length)];
+      const randomTable = 'Table 0' + Math.floor(1 + Math.random() * 6);
+      const subtotal = randomDishSet.reduce((acc, d) => acc + (d.quantity * 550), 0);
+
+      const newSimOrder = {
+        id: 'ORD-' + Math.floor(1000 + Math.random() * 9000),
+        table: randomTable,
+        items: randomDishSet,
+        total: `₹ ${subtotal.toLocaleString('en-IN')}`,
+        status: 'Cooking',
+        timestamp: Date.now(),
+        time: 'Just now'
+      };
+
+      const orders = getAdminOrders();
+      orders.unshift(newSimOrder);
+      localStorage.setItem('aha_admin_orders', JSON.stringify(orders));
+
+      let totalRevenue = parseInt(localStorage.getItem('aha_total_revenue') || '0');
+      let totalSales = parseInt(localStorage.getItem('aha_total_sales') || '0');
+      totalRevenue += subtotal;
+      totalSales += 1;
+      localStorage.setItem('aha_total_revenue', totalRevenue);
+      localStorage.setItem('aha_total_sales', totalSales);
+
+      broadcastRealtimeEvent('NEW_ORDER_PLACED', newSimOrder);
+      renderAdminOrders();
+      updateDashboardMetrics();
+    }
+  </script>
+
+  <!-- POS Payment Modal -->
+  <div id="posPaymentModal" class="hidden fixed inset-0 z-[100] bg-black/80 backdrop-blur-sm items-center justify-center p-4 opacity-0 transition-opacity duration-300 pointer-events-auto">
+    <div class="glass-card-elevated max-w-md w-full rounded-3xl p-8 relative shadow-2xl border border-white/10 animate-scale-up">
+      <button onclick="closePosPaymentModal()" class="absolute top-4 right-4 text-on-surface-variant hover:text-primary p-2 bg-white/5 rounded-full backdrop-blur-md transition-colors z-10">
+        <span class="material-symbols-outlined">close</span>
+      </button>
+      <div class="text-center mb-8 relative z-10">
+        <div class="w-16 h-16 rounded-full bg-primary/20 flex items-center justify-center mx-auto mb-4 border border-primary/30 shadow-[0_0_15px_rgba(234,179,8,0.3)]">
+          <span class="material-symbols-outlined text-3xl text-primary">point_of_sale</span>
+        </div>
+        <h3 class="text-2xl font-bold font-headline text-on-surface">Settle Bill</h3>
+        <p class="text-on-surface-variant text-sm mt-2">Amount Due: <strong id="posPaymentAmount" class="text-primary text-xl">₹ 0</strong></p>
+      </div>
+      <div class="grid gap-4 relative z-10">
+        <button onclick="settlePosPayment('Credit Card')" class="w-full group glass-button border border-white/10 p-4 rounded-2xl flex items-center justify-between hover:border-primary/50 transition-all">
+          <div class="flex items-center gap-4">
+            <div class="w-10 h-10 rounded-full bg-blue-500/20 flex items-center justify-center text-blue-400 group-hover:scale-110 transition-transform"><span class="material-symbols-outlined">credit_card</span></div>
+            <span class="font-bold text-on-surface">Credit / Debit Card</span>
+          </div>
+          <span class="material-symbols-outlined text-on-surface-variant group-hover:text-primary transition-colors">chevron_right</span>
+        </button>
+        <button onclick="settlePosPayment('UPI / QR')" class="w-full group glass-button border border-white/10 p-4 rounded-2xl flex items-center justify-between hover:border-primary/50 transition-all">
+          <div class="flex items-center gap-4">
+            <div class="w-10 h-10 rounded-full bg-purple-500/20 flex items-center justify-center text-purple-400 group-hover:scale-110 transition-transform"><span class="material-symbols-outlined">qr_code_scanner</span></div>
+            <span class="font-bold text-on-surface">UPI / QR Code</span>
+          </div>
+          <span class="material-symbols-outlined text-on-surface-variant group-hover:text-primary transition-colors">chevron_right</span>
+        </button>
+        <button onclick="settlePosPayment('Cash')" class="w-full group glass-button border border-white/10 p-4 rounded-2xl flex items-center justify-between hover:border-primary/50 transition-all">
+          <div class="flex items-center gap-4">
+            <div class="w-10 h-10 rounded-full bg-green-500/20 flex items-center justify-center text-green-400 group-hover:scale-110 transition-transform"><span class="material-symbols-outlined">payments</span></div>
+            <span class="font-bold text-on-surface">Cash Payment</span>
+          </div>
+          <span class="material-symbols-outlined text-on-surface-variant group-hover:text-primary transition-colors">chevron_right</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Reset POS Confirmation Modal -->
+  <div id="resetPosModal" class="fixed inset-0 bg-black/85 backdrop-blur-xl z-[110] hidden items-center justify-center p-6 animate-fade-in">
+    <div class="glass-card-elevated w-full max-w-md p-8 rounded-3xl border border-red-500/40 shadow-2xl relative text-center">
+      <div class="w-16 h-16 rounded-full bg-red-500/20 border border-red-500/40 text-red-400 flex items-center justify-center mx-auto mb-4">
+        <span class="material-symbols-outlined text-3xl">delete_forever</span>
+      </div>
+      <h3 class="font-headline text-2xl text-on-surface mb-2 font-bold">Reset Entire POS System?</h3>
+      <p class="text-xs text-on-surface-variant mb-6 leading-relaxed">
+        This will wipe all active kitchen tickets, clear all dine-in tables, reset today's revenue to <strong class="text-primary font-bold">₹0</strong>, clear reservations, and reset sales charts.
+      </p>
+      
+      <div class="flex gap-3">
+        <button type="button" onclick="closeResetPosModal()" class="flex-1 px-5 py-3 rounded-full glass-card hover:bg-white/10 text-on-surface text-xs font-bold transition-colors">
+          Cancel
+        </button>
+        <button type="button" onclick="executeResetPos()" class="flex-1 bg-red-500 hover:bg-red-600 text-white py-3 rounded-full text-xs font-bold transition-all shadow-lg flex items-center justify-center gap-2">
+          <span class="material-symbols-outlined text-sm">restart_alt</span>
+          <span>Wipe &amp; Reset to Zero</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bill Generation Modal -->
+  <div id="billModal" class="fixed inset-0 z-[120] bg-black/80 backdrop-blur-sm hidden items-center justify-center p-4 transition-opacity duration-300">
+    <div id="billModalContent" class="bg-white rounded-2xl w-full max-w-sm overflow-hidden shadow-2xl relative">
+      <div class="no-print absolute top-4 right-4">
+        <button onclick="closeBillModal()" class="text-gray-400 hover:text-gray-800 p-2 bg-gray-100 rounded-full transition-colors flex items-center justify-center">
+          <span class="material-symbols-outlined text-xl">close</span>
+        </button>
+      </div>
+      <div id="billModalContentBody" class="p-8 pb-10">
+        <!-- Dynamically populated bill content -->
+      </div>
+      <div class="no-print p-4 bg-gray-50 border-t border-gray-100 flex gap-3">
+        <button onclick="window.print()" class="flex-1 bg-primary text-on-primary py-3 rounded-xl text-sm font-bold shadow-md hover:bg-primary-fixed-dim transition-colors flex items-center justify-center gap-2">
+          <span class="material-symbols-outlined text-base">print</span> Print Receipt
+        </button>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

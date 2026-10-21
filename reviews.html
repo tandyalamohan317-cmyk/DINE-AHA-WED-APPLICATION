@@ -1,0 +1,570 @@
+<!DOCTYPE html>
+<html class="dark" lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+  <title>Patron Reviews &amp; Press - AHA Restaurant</title>
+  <meta name="description" content="Read reviews and testimonials from our esteemed patrons and food critics. 4.0 Google Rating with 93+ verified reviews."/>
+  
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,600;0,700;1,600;1,700&display=swap" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+  
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+  <script>
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          colors: {
+            "primary": "#f2ca50",
+            "primary-container": "#d4af37",
+            "primary-fixed": "#ffe088",
+            "primary-fixed-dim": "#e9c349",
+            "on-primary": "#3c2f00",
+            "on-primary-container": "#554300",
+            "background": "#16130b",
+            "surface": "#16130b",
+            "surface-dim": "#16130b",
+            "surface-bright": "#3d392f",
+            "surface-container-lowest": "#110e07",
+            "surface-container-low": "#1f1b13",
+            "surface-container": "#231f17",
+            "surface-container-high": "#2d2a21",
+            "surface-container-highest": "#38342b",
+            "on-surface": "#eae1d4",
+            "on-surface-variant": "#d0c5af",
+            "inverse-surface": "#eae1d4",
+            "inverse-on-surface": "#343027",
+            "outline": "#99907c",
+            "outline-variant": "#4d4635",
+            "secondary": "#c9c6c5",
+            "secondary-container": "#4a4949",
+            "on-secondary": "#313030",
+            "error": "#ffb4ab",
+            "error-container": "#93000a"
+          },
+          borderRadius: {
+            "DEFAULT": "1rem",
+            "lg": "2rem",
+            "xl": "3rem",
+            "full": "9999px"
+          },
+          spacing: {
+            "gutter": "24px",
+            "container-max": "1280px",
+            "stack-gap": "40px",
+            "margin-desktop": "64px",
+            "margin-mobile": "20px"
+          },
+          fontFamily: {
+            "headline": ["Playfair Display", "serif"],
+            "display": ["Playfair Display", "serif"],
+            "body": ["Inter", "sans-serif"]
+          }
+        }
+      }
+    }
+  </script>
+  
+  <link rel="stylesheet" href="styles.css"/>
+</head>
+<body class="bg-background text-on-background font-body antialiased overflow-x-hidden pt-24 selection:bg-primary/30 selection:text-primary">
+
+  <!-- Ambient Glow -->
+  <div class="fixed top-1/4 left-1/4 w-[450px] h-[450px] bg-primary/10 rounded-full blur-[150px] pointer-events-none -z-10 animate-pulse-glow"></div>
+
+  <!-- Top Navigation Bar -->
+  <header class="fixed top-0 w-full z-50 glass-nav">
+    <div class="flex justify-between items-center px-margin-mobile md:px-margin-desktop py-4 max-w-container-max mx-auto">
+      <!-- Logo & Brand -->
+      <a class="flex items-center gap-3 group" href="index.html">
+        <div class="w-10 h-10 rounded-full bg-primary/20 border border-primary/40 flex items-center justify-center text-primary font-display font-bold text-xl group-hover:scale-105 transition-transform">
+          A
+        </div>
+        <div>
+          <span class="font-display text-2xl text-primary font-bold tracking-wider block leading-none">AHA</span>
+          <span class="text-[10px] uppercase tracking-widest text-on-surface-variant font-medium">Fine Dining</span>
+        </div>
+      </a>
+      
+      <!-- Main Desktop Navigation Links -->
+      <nav class="hidden xl:flex gap-1.5 items-center text-xs font-semibold">
+        <a class="nav-link flex items-center gap-1.5 px-3.5 py-2 rounded-full text-on-surface-variant hover:text-primary hover:bg-white/10 transition-all" href="index.html">
+          <span class="material-symbols-outlined text-base">home</span>
+          <span>Home</span>
+        </a>
+        <a class="nav-link flex items-center gap-1.5 px-3.5 py-2 rounded-full text-on-surface-variant hover:text-primary hover:bg-white/10 transition-all" href="menu.html">
+          <span class="material-symbols-outlined text-base">restaurant_menu</span>
+          <span>Menu</span>
+        </a>
+        <a class="nav-link flex items-center gap-1.5 px-3.5 py-2 rounded-full text-on-surface-variant hover:text-primary hover:bg-white/10 transition-all" href="reviews.html">
+          <span class="material-symbols-outlined text-base">rate_review</span>
+          <span>Reviews</span>
+        </a>
+        <a class="nav-link flex items-center gap-1.5 px-3.5 py-2 rounded-full text-on-surface-variant hover:text-primary hover:bg-white/10 transition-all" href="about.html">
+          <span class="material-symbols-outlined text-base">auto_stories</span>
+          <span>About Us</span>
+        </a>
+      </nav>
+      
+      <!-- Right Action Controls -->
+      <div class="flex items-center gap-3">
+        <!-- Order Tray / Cart Button -->
+        <button class="cart-toggle-btn relative flex items-center gap-2 px-4 py-2 rounded-full glass-card hover:bg-white/10 text-on-surface transition-all border border-white/10 text-xs font-bold" title="View Order Tray">
+          <span class="material-symbols-outlined text-base text-primary">shopping_bag</span>
+          <span class="hidden sm:inline">Order Tray</span>
+          <span class="cart-count-badge bg-primary text-on-primary text-[11px] font-bold w-5 h-5 rounded-full flex items-center justify-center hidden">0</span>
+        </button>
+
+        <!-- Book Table Action -->
+        <a href="reservation.html" class="hidden md:inline-flex items-center gap-1.5 bg-primary-container hover:bg-primary text-on-primary px-5 py-2 rounded-full text-xs font-bold transition-all shadow-[0_0_20px_rgba(212,175,55,0.25)]">
+          <span class="material-symbols-outlined text-sm">calendar_month</span>
+          <span>Book a Table</span>
+        </a>
+
+        <!-- Admin Portal Badge Link -->
+        <a href="admin.html" class="hidden lg:inline-flex items-center gap-1.5 glass-card hover:bg-primary/20 text-on-surface-variant hover:text-primary border border-white/10 hover:border-primary/40 px-3.5 py-2 rounded-full text-xs font-semibold transition-all" title="Open Staff POS & Kitchen Display">
+          <span class="w-2 h-2 rounded-full bg-green-400 animate-pulse"></span>
+          <span>Staff POS</span>
+        </a>
+        
+        <!-- Mobile menu toggle -->
+        <button id="mobileMenuToggle" class="xl:hidden text-primary p-2 flex items-center gap-1 glass-card rounded-full px-3">
+          <span class="material-symbols-outlined text-xl">menu</span>
+          <span class="text-xs font-bold">Menu</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Mobile Drawer Menu -->
+  <div id="mobileMenu" class="fixed inset-0 bg-background/95 backdrop-blur-2xl z-50 hidden flex-col justify-between p-8">
+    <div class="flex justify-between items-center border-b border-white/10 pb-6">
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 rounded-full bg-primary/20 border border-primary/40 flex items-center justify-center text-primary font-display font-bold text-xl">
+          A
+        </div>
+        <div>
+          <span class="font-display text-2xl text-primary font-bold">AHA</span>
+          <span class="text-[10px] uppercase tracking-widest text-on-surface-variant font-medium block">Fine Dining</span>
+        </div>
+      </div>
+      <button id="mobileMenuClose" class="text-on-surface-variant hover:text-primary p-2">
+        <span class="material-symbols-outlined text-3xl">close</span>
+      </button>
+    </div>
+    
+    <div class="flex flex-col gap-4 text-base font-semibold my-auto">
+      <a class="flex items-center gap-3 px-4 py-3 rounded-2xl text-on-surface-variant hover:text-primary hover:bg-white/5 transition-all" href="index.html">
+        <span class="material-symbols-outlined text-xl">home</span>
+        <span>Home</span>
+      </a>
+      <a class="flex items-center gap-3 px-4 py-3 rounded-2xl text-on-surface-variant hover:text-primary hover:bg-white/5 transition-all" href="menu.html">
+        <span class="material-symbols-outlined text-xl">restaurant_menu</span>
+        <span>Digital Menu</span>
+      </a>
+      <a class="flex items-center gap-3 px-4 py-3 rounded-2xl text-on-surface-variant hover:text-primary hover:bg-white/5 transition-all" href="reviews.html">
+        <span class="material-symbols-outlined text-xl">rate_review</span>
+        <span>Patron Reviews</span>
+      </a>
+      <a class="flex items-center gap-3 px-4 py-3 rounded-2xl text-on-surface-variant hover:text-primary hover:bg-white/5 transition-all" href="about.html">
+        <span class="material-symbols-outlined text-xl">auto_stories</span>
+        <span>About Us</span>
+      </a>
+      <a class="flex items-center gap-3 px-4 py-3 rounded-2xl text-primary bg-primary/10 border border-primary/30" href="admin.html">
+        <span class="material-symbols-outlined text-xl">dashboard</span>
+        <span>Staff POS &amp; KDS</span>
+      </a>
+    </div>
+
+    <div class="space-y-3 pt-6 border-t border-white/10">
+      <a href="reservation.html" class="w-full bg-primary hover:bg-primary-fixed-dim text-on-primary py-3.5 rounded-full font-bold text-center flex items-center justify-center gap-2 text-sm shadow-lg">
+        <span class="material-symbols-outlined text-base">calendar_month</span>
+        <span>Book a Table</span>
+      </a>
+    </div>
+  </div>
+
+  <main class="max-w-container-max mx-auto px-margin-mobile md:px-margin-desktop py-12">
+    <!-- Header -->
+    <section class="text-center max-w-3xl mx-auto mb-14">
+      <span class="text-xs uppercase tracking-widest text-primary font-bold">Words from Our Diners</span>
+      <h1 class="font-display text-4xl sm:text-5xl md:text-6xl text-primary mt-2 mb-6 text-glow">
+        Patron Reviews &amp; Press
+      </h1>
+      <p class="text-on-surface-variant text-base sm:text-lg leading-relaxed">
+        Discover what distinguished food critics and beloved patrons say about their evenings at AHA.
+      </p>
+    </section>
+
+    <!-- Ratings Summary Bento Grid -->
+    <section class="glass-card-elevated p-8 md:p-12 rounded-3xl mb-16 border border-primary/20">
+      <div class="grid grid-cols-1 md:grid-cols-12 gap-8 items-center">
+        <!-- Main Score -->
+        <div class="md:col-span-4 text-center md:text-left md:border-r border-white/10 md:pr-8">
+          <div class="font-display text-6xl text-primary font-bold mb-2 flex items-center justify-center md:justify-start gap-2">
+            4.0 <span class="material-symbols-outlined text-4xl" style="font-variation-settings: 'FILL' 1;">star</span>
+          </div>
+          <div class="flex text-primary justify-center md:justify-start gap-1 mb-2">
+            <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">star</span>
+            <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">star</span>
+            <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">star</span>
+            <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">star</span>
+            <span class="material-symbols-outlined text-white/30">star</span>
+          </div>
+          <p class="text-sm font-semibold text-on-surface">Based on 93+ Verified Reviews</p>
+          <p class="text-xs text-on-surface-variant mt-1">Google &amp; OpenTable verified patrons</p>
+        </div>
+
+        <!-- Rating Distribution Bars -->
+        <div class="md:col-span-5 space-y-2.5">
+          <div class="flex items-center gap-3 text-xs">
+            <span class="w-12 text-on-surface-variant">5 Stars</span>
+            <div class="flex-1 bg-white/10 h-2 rounded-full overflow-hidden">
+              <div class="bg-primary h-full w-[78%] rounded-full"></div>
+            </div>
+            <span class="w-8 text-right text-on-surface">78%</span>
+          </div>
+          <div class="flex items-center gap-3 text-xs">
+            <span class="w-12 text-on-surface-variant">4 Stars</span>
+            <div class="flex-1 bg-white/10 h-2 rounded-full overflow-hidden">
+              <div class="bg-primary/80 h-full w-[16%] rounded-full"></div>
+            </div>
+            <span class="w-8 text-right text-on-surface">16%</span>
+          </div>
+          <div class="flex items-center gap-3 text-xs">
+            <span class="w-12 text-on-surface-variant">3 Stars</span>
+            <div class="flex-1 bg-white/10 h-2 rounded-full overflow-hidden">
+              <div class="bg-white/30 h-full w-[4%] rounded-full"></div>
+            </div>
+            <span class="w-8 text-right text-on-surface">4%</span>
+          </div>
+          <div class="flex items-center gap-3 text-xs">
+            <span class="w-12 text-on-surface-variant">2 Stars</span>
+            <div class="flex-1 bg-white/10 h-2 rounded-full overflow-hidden">
+              <div class="bg-white/20 h-full w-[1%] rounded-full"></div>
+            </div>
+            <span class="w-8 text-right text-on-surface">1%</span>
+          </div>
+          <div class="flex items-center gap-3 text-xs">
+            <span class="w-12 text-on-surface-variant">1 Star</span>
+            <div class="flex-1 bg-white/10 h-2 rounded-full overflow-hidden">
+              <div class="bg-white/10 h-full w-[1%] rounded-full"></div>
+            </div>
+            <span class="w-8 text-right text-on-surface">1%</span>
+          </div>
+        </div>
+
+        <!-- Write Review Button -->
+        <div class="md:col-span-3 text-center">
+          <button onclick="openReviewModal()" class="w-full bg-primary hover:bg-primary-fixed-dim text-on-primary font-bold py-3.5 px-6 rounded-full transition-all shadow-lg text-sm flex items-center justify-center gap-2">
+            <span class="material-symbols-outlined text-sm">rate_review</span>
+            <span>Leave a Review</span>
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Reviews Feed Grid -->
+    <section class="space-y-6 mb-16" id="reviewsFeed">
+      <!-- Review 1 -->
+      <div class="glass-card p-6 md:p-8 rounded-2xl border border-white/10 hover:border-primary/30 transition-all">
+        <div class="flex justify-between items-start mb-4">
+          <div class="flex items-center gap-4">
+            <div class="w-12 h-12 rounded-full bg-primary/20 border border-primary/40 flex items-center justify-center font-bold text-primary text-base">
+              RK
+            </div>
+            <div>
+              <h4 class="font-headline text-lg text-on-surface font-semibold">Rajesh Kapoor</h4>
+              <div class="flex items-center gap-2 text-xs text-on-surface-variant">
+                <span class="text-primary flex">★★★★★</span>
+                <span>• 2 days ago</span>
+                <span class="px-2 py-0.5 rounded-full bg-green-500/10 text-green-400 text-[10px] font-semibold">Verified Diner</span>
+              </div>
+            </div>
+          </div>
+          <span class="material-symbols-outlined text-primary/30 text-3xl">format_quote</span>
+        </div>
+        <p class="text-on-surface-variant text-sm sm:text-base leading-relaxed mb-4">
+          "The Awadhi Mutton Dum Biryani here is simply unparalleled in the entire city. When they opened the sealed clay handi at our table, the aroma of real Kashmir saffron and rose water filled the private glass chamber. Exceptional service!"
+        </p>
+        <div class="flex gap-2 text-xs text-primary font-medium">
+          <span class="glass-card px-3 py-1 rounded-full">Ordered: Awadhi Mutton Dum Biryani</span>
+          <span class="glass-card px-3 py-1 rounded-full">Black Truffle Galouti</span>
+        </div>
+      </div>
+
+      <!-- Review 2 -->
+      <div class="glass-card p-6 md:p-8 rounded-2xl border border-white/10 hover:border-primary/30 transition-all">
+        <div class="flex justify-between items-start mb-4">
+          <div class="flex items-center gap-4">
+            <div class="w-12 h-12 rounded-full bg-primary/20 border border-primary/40 flex items-center justify-center font-bold text-primary text-base">
+              MS
+            </div>
+            <div>
+              <h4 class="font-headline text-lg text-on-surface font-semibold">Meera Sen</h4>
+              <div class="flex items-center gap-2 text-xs text-on-surface-variant">
+                <span class="text-primary flex">★★★★★</span>
+                <span>• 1 week ago</span>
+                <span class="px-2 py-0.5 rounded-full bg-green-500/10 text-green-400 text-[10px] font-semibold">Verified Diner</span>
+              </div>
+            </div>
+          </div>
+          <span class="material-symbols-outlined text-primary/30 text-3xl">format_quote</span>
+        </div>
+        <p class="text-on-surface-variant text-sm sm:text-base leading-relaxed mb-4">
+          "Celebrated our 10th anniversary in Private Glass Chamber 02. The subtle amber spotlights against the frosted glass walls made it feel like dining inside a crystal lantern. The 24K Gold Shahi Tukda is a work of pure art."
+        </p>
+        <div class="flex gap-2 text-xs text-primary font-medium">
+          <span class="glass-card px-3 py-1 rounded-full">Ordered: 7-Course Degustation</span>
+          <span class="glass-card px-3 py-1 rounded-full">24K Gold Shahi Tukda</span>
+        </div>
+      </div>
+
+      <!-- Review 3 -->
+      <div class="glass-card p-6 md:p-8 rounded-2xl border border-white/10 hover:border-primary/30 transition-all">
+        <div class="flex justify-between items-start mb-4">
+          <div class="flex items-center gap-4">
+            <div class="w-12 h-12 rounded-full bg-primary/20 border border-primary/40 flex items-center justify-center font-bold text-primary text-base">
+              AK
+            </div>
+            <div>
+              <h4 class="font-headline text-lg text-on-surface font-semibold">Arjun Khanna (Food Columnist)</h4>
+              <div class="flex items-center gap-2 text-xs text-on-surface-variant">
+                <span class="text-primary flex">★★★★☆</span>
+                <span>• 2 weeks ago</span>
+                <span class="px-2 py-0.5 rounded-full bg-primary/20 text-primary text-[10px] font-semibold">Critic Review</span>
+              </div>
+            </div>
+          </div>
+          <span class="material-symbols-outlined text-primary/30 text-3xl">format_quote</span>
+        </div>
+        <p class="text-on-surface-variant text-sm sm:text-base leading-relaxed mb-4">
+          "Chef Rohan Varma's commitment to ancestral slow-cooking without shortcuts is evident in the 24-Hour Dal-e-AHA. The texture is pure silk. An essential reservation for anyone who appreciates thoughtful Indian gastronomy."
+        </p>
+        <div class="flex gap-2 text-xs text-primary font-medium">
+          <span class="glass-card px-3 py-1 rounded-full">Ordered: Dal-e-AHA</span>
+          <span class="glass-card px-3 py-1 rounded-full">Saffron Paneer Tikka</span>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Leave Review Modal -->
+  <div id="reviewModal" class="fixed inset-0 bg-black/80 backdrop-blur-xl z-50 hidden items-center justify-center p-6">
+    <div class="glass-card-elevated w-full max-w-lg p-8 rounded-3xl border border-primary/30 shadow-2xl relative">
+      <button onclick="closeReviewModal()" class="absolute top-6 right-6 text-on-surface-variant hover:text-primary">
+        <span class="material-symbols-outlined text-2xl">close</span>
+      </button>
+
+      <h3 class="font-headline text-2xl text-on-surface mb-2">Share Your Experience</h3>
+      <p class="text-xs text-on-surface-variant mb-6">Your review will be shared with the Executive Chef and posted live.</p>
+
+      <form onsubmit="submitReview(event)" class="space-y-4">
+        <div>
+          <label class="block text-xs uppercase tracking-wider text-on-surface-variant font-semibold mb-1">Your Rating</label>
+          <div class="flex gap-2 text-2xl text-primary cursor-pointer" id="starRatingSelector">
+            <span onclick="setStars(1)" class="star-icon">★</span>
+            <span onclick="setStars(2)" class="star-icon">★</span>
+            <span onclick="setStars(3)" class="star-icon">★</span>
+            <span onclick="setStars(4)" class="star-icon">★</span>
+            <span onclick="setStars(5)" class="star-icon">★</span>
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-xs uppercase tracking-wider text-on-surface-variant font-semibold mb-1">Your Name</label>
+          <input type="text" id="revName" required placeholder="e.g. Priya Sharma" class="w-full glass-input px-4 py-2.5 rounded-xl text-sm focus:outline-none"/>
+        </div>
+
+        <div>
+          <label class="block text-xs uppercase tracking-wider text-on-surface-variant font-semibold mb-1">Favorite Dish</label>
+          <input type="text" id="revDish" placeholder="e.g. Truffle Galouti, Biryani" class="w-full glass-input px-4 py-2.5 rounded-xl text-sm focus:outline-none"/>
+        </div>
+
+        <div>
+          <label class="block text-xs uppercase tracking-wider text-on-surface-variant font-semibold mb-1">Review Comments</label>
+          <textarea id="revComment" rows="3" required placeholder="Tell us about the dishes, ambience, or service..." class="w-full glass-input px-4 py-2.5 rounded-xl text-sm focus:outline-none"></textarea>
+        </div>
+
+        <button type="submit" class="w-full bg-primary hover:bg-primary-fixed-dim text-on-primary font-bold py-3 rounded-full text-sm transition-all shadow-md mt-2">
+          Post Verified Review
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer class="w-full bg-surface-container-lowest border-t border-white/5 text-sm mt-20">
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-gutter px-margin-mobile md:px-margin-desktop py-16 max-w-container-max mx-auto">
+      <div class="col-span-1 md:col-span-2">
+        <div class="font-display text-3xl text-primary font-bold mb-3 tracking-wider">AHA</div>
+        <p class="text-on-surface-variant max-w-sm mb-6 leading-relaxed">
+          Experience the pinnacle of culinary artistry in an atmosphere of refined glassmorphic elegance.
+        </p>
+        <div class="text-xs text-on-surface-variant/70">
+          © 2026 AHA Restaurant. All culinary rights reserved.
+        </div>
+      </div>
+
+      <div>
+        <h4 class="text-on-surface font-headline font-semibold text-base mb-4">Quick Navigation</h4>
+        <ul class="space-y-2 text-on-surface-variant">
+          <li><a class="hover:text-primary transition-colors" href="index.html">Home</a></li>
+          <li><a class="hover:text-primary transition-colors" href="about.html">About Us</a></li>
+          <li><a class="hover:text-primary transition-colors" href="menu.html">Digital Menu</a></li>
+          <li></li>
+          <li></li>
+          <li><a class="hover:text-primary transition-colors" href="reviews.html">Patron Reviews</a></li>
+          <li><a class="hover:text-primary transition-colors" href="reservation.html">Table Reservation</a></li>
+        </ul>
+      </div>
+
+      <div>
+        <h4 class="text-on-surface font-headline font-semibold text-base mb-4">Timings &amp; Location</h4>
+        <p class="text-on-surface-variant mb-2">Mon - Sun: 12:00 PM – 11:30 PM</p>
+        <p class="text-on-surface-variant mb-4">42 Royal Boulevard, Amber District</p>
+        <div class="flex gap-3 text-primary">
+          <a href="#" class="p-2 rounded-full glass-card hover:bg-primary hover:text-on-primary transition-colors">
+            <span class="material-symbols-outlined text-sm">call</span>
+          </a>
+          <a href="#" class="p-2 rounded-full glass-card hover:bg-primary hover:text-on-primary transition-colors">
+            <span class="material-symbols-outlined text-sm">mail</span>
+          </a>
+          <a href="#" class="p-2 rounded-full glass-card hover:bg-primary hover:text-on-primary transition-colors">
+            <span class="material-symbols-outlined text-sm">location_on</span>
+          </a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Order Tray / Cart Drawer -->
+  <div id="cartBackdrop" onclick="closeCartDrawer()" class="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 hidden transition-opacity"></div>
+  <aside id="cartDrawer" class="fixed top-0 right-0 h-full w-full max-w-md bg-surface-container-low border-l border-white/10 z-50 transform translate-x-full transition-transform duration-300 flex flex-col justify-between p-6 shadow-2xl">
+    <div>
+      <div class="flex justify-between items-center border-b border-white/10 pb-4 mb-4">
+        <div class="flex items-center gap-2">
+          <span class="material-symbols-outlined text-primary">shopping_bag</span>
+          <h3 class="font-headline text-xl text-on-surface">Your Order Tray</h3>
+        </div>
+        <button id="cartClose" class="text-on-surface-variant hover:text-primary p-1">
+          <span class="material-symbols-outlined">close</span>
+        </button>
+      </div>
+
+      <div id="cartItemsList" class="overflow-y-auto max-h-[calc(100vh-280px)] pr-1">
+        <!-- Injected via JavaScript -->
+      </div>
+    </div>
+
+    <div class="border-t border-white/10 pt-4 space-y-3">
+      <div class="mb-3 pb-2 border-b border-white/10">
+        <label class="block text-xs text-on-surface-variant mb-1 font-semibold">Dining Destination</label>
+        <select id="cartOrderDestination" class="w-full bg-white/5 rounded-xl py-2 px-3 text-sm text-on-surface focus:outline-none focus:border-primary/50 border border-white/10 shadow-sm cursor-pointer">
+          <option value="Parcel (Takeaway)" class="bg-[#16130b]">??? Parcel (Takeaway)</option>
+          <option value="Table 01" class="bg-[#16130b]">??? Table 01 (Main Hall)</option>
+          <option value="Table 02" class="bg-[#16130b]">??? Table 02 (Main Hall)</option>
+          <option value="Table 03" class="bg-[#16130b]">??? Table 03 (Main Hall)</option>
+          <option value="Table 04" class="bg-[#16130b]">??? Table 04 (Main Hall)</option>
+          <option value="Table 05" class="bg-[#16130b]">??? Table 05 (Main Hall)</option>
+          <option value="Table 06" class="bg-[#16130b]">??? Table 06 (Main Hall)</option>
+          <option value="Glass Pod 01" class="bg-[#16130b]">?? Glass Pod 01 (VIP)</option>
+          <option value="Glass Pod 02" class="bg-[#16130b]">?? Glass Pod 02 (VIP)</option>
+          <option value="Terrace 01" class="bg-[#16130b]">?? Terrace 01 (Sky)</option>
+          <option value="Terrace 02" class="bg-[#16130b]">?? Terrace 02 (Sky)</option>
+          <option value="Counter 01" class="bg-[#16130b]">????? Chef Counter 01</option>
+          <option value="Counter 02" class="bg-[#16130b]">????? Chef Counter 02</option>
+        </select>
+      </div>
+      <div class="flex justify-between text-sm text-on-surface-variant">
+        <span>Subtotal</span>
+        <span id="cartSubtotal" class="font-medium text-on-surface">₹0</span>
+      </div>
+      <div class="flex justify-between text-sm text-on-surface-variant">
+        <span>GST &amp; Service (5%)</span>
+        <span id="cartTaxes" class="font-medium text-on-surface">₹0</span>
+      </div>
+      <div class="flex justify-between text-base font-bold text-on-surface border-t border-white/10 pt-2">
+        <span>Total Amount</span>
+        <span id="cartTotal" class="text-primary text-xl font-display">₹0</span>
+      </div>
+      <button onclick="checkoutOrder()" class="w-full bg-primary hover:bg-primary-fixed-dim text-on-primary py-3.5 rounded-full font-bold transition-all shadow-lg mt-2">
+        Confirm &amp; Send to Kitchen
+      </button>
+    </div>
+  </aside>
+
+  <script src="app.js"></script>
+  <script>
+    let selectedStars = 5;
+
+    function openReviewModal() {
+      const modal = document.getElementById('reviewModal');
+      modal.classList.remove('hidden');
+      modal.classList.add('flex');
+    }
+
+    function closeReviewModal() {
+      const modal = document.getElementById('reviewModal');
+      modal.classList.add('hidden');
+      modal.classList.remove('flex');
+    }
+
+    function setStars(count) {
+      selectedStars = count;
+      const stars = document.querySelectorAll('.star-icon');
+      stars.forEach((s, idx) => {
+        s.style.opacity = idx < count ? '1' : '0.3';
+      });
+    }
+
+    function submitReview(e) {
+      e.preventDefault();
+      const name = document.getElementById('revName').value;
+      const dish = document.getElementById('revDish').value || 'Chef Creation';
+      const comment = document.getElementById('revComment').value;
+
+      const feed = document.getElementById('reviewsFeed');
+      const card = document.createElement('div');
+      card.className = 'glass-card p-6 md:p-8 rounded-2xl border border-primary/30 animate-fade-in mb-6';
+      
+      const initials = name.split(' ').map(n => n[0]).join('').toUpperCase() || 'U';
+      const starsStr = '★'.repeat(selectedStars) + '☆'.repeat(5 - selectedStars);
+
+      card.innerHTML = `
+        <div class="flex justify-between items-start mb-4">
+          <div class="flex items-center gap-4">
+            <div class="w-12 h-12 rounded-full bg-primary/20 border border-primary/40 flex items-center justify-center font-bold text-primary text-base">
+              ${initials}
+            </div>
+            <div>
+              <h4 class="font-headline text-lg text-on-surface font-semibold">${name}</h4>
+              <div class="flex items-center gap-2 text-xs text-on-surface-variant">
+                <span class="text-primary flex">${starsStr}</span>
+                <span>• Just now</span>
+                <span class="px-2 py-0.5 rounded-full bg-green-500/10 text-green-400 text-[10px] font-semibold">Verified Diner</span>
+              </div>
+            </div>
+          </div>
+          <span class="material-symbols-outlined text-primary text-2xl">verified</span>
+        </div>
+        <p class="text-on-surface-variant text-sm sm:text-base leading-relaxed mb-4">"${comment}"</p>
+        <div class="flex gap-2 text-xs text-primary font-medium">
+          <span class="glass-card px-3 py-1 rounded-full">Ordered: ${dish}</span>
+        </div>
+      `;
+
+      feed.insertBefore(card, feed.firstChild);
+      closeReviewModal();
+      showToast('Thank you! Your verified review has been published.', 'success');
+      e.target.reset();
+    }
+  </script>
+</body>
+</html>
+
